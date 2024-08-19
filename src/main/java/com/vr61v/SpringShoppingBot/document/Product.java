@@ -12,9 +12,9 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 import java.util.UUID;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @Document(indexName = "products")
 public class Product {
 

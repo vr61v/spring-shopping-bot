@@ -1,41 +1,64 @@
 package com.vr61v.SpringShoppingBot.service.impl;
 
 import com.vr61v.SpringShoppingBot.document.Product;
+import com.vr61v.SpringShoppingBot.document.request.product.CreateProductRequest;
+import com.vr61v.SpringShoppingBot.document.request.product.UpdateProductRequest;
 import com.vr61v.SpringShoppingBot.repository.ProductRepository;
 import com.vr61v.SpringShoppingBot.service.ProductService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.jvnet.hk2.annotations.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
-@Slf4j
-@Service
+@Component
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
 
     @Override
-    public Product saveProduct(Product product) {
+    public Product saveProduct(CreateProductRequest request) {
+        Product product = Product.builder()
+                .id(UUID.randomUUID())
+                .name(request.name())
+                .price(request.price())
+                .count(request.count())
+                .description(request.description())
+                .categoryId(request.categoryId())
+                .vendorId(request.vendorId())
+                .build();
         return productRepository.save(product);
     }
 
     @Override
-    public Product updateProduct(Product product) {
-        return productRepository.save(product);
+    public Product getProductById(UUID id) {
+        return productRepository.findById(id).orElse(null);
     }
 
     @Override
-    public Optional<Product> getProductById(UUID id) {
-        return productRepository.findById(id);
+    public List<Product> getProductsByDescription(String description) {
+        return productRepository.findByDescriptionContainingIgnoreCase(description);
     }
 
     @Override
     public List<Product> getAllProducts() {
         return List.of((Product) productRepository.findAll());
+    }
+
+    @Override
+    public Product updateProduct(UUID id, UpdateProductRequest request) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(IllegalArgumentException::new);
+
+        if (request.name() != null) product.setName(request.name());
+        if (request.price() != null) product.setPrice(request.price());
+        if (request.count() != null) product.setCount(request.count());
+        if (request.description() != null) product.setDescription(request.description());
+        if (request.categoryId() != null) product.setCategoryId(request.categoryId());
+        if (request.vendorId() != null) product.setVendorId(request.vendorId());
+
+        return productRepository.save(product);
     }
 
     @Override

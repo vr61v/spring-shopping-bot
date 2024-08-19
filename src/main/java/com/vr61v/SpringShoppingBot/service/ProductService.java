@@ -1,20 +1,23 @@
 package com.vr61v.SpringShoppingBot.service;
 
 import com.vr61v.SpringShoppingBot.document.Product;
+import com.vr61v.SpringShoppingBot.document.request.product.CreateProductRequest;
+import com.vr61v.SpringShoppingBot.document.request.product.UpdateProductRequest;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public interface ProductService {
 
-    Product saveProduct(Product product);
+    Product saveProduct(CreateProductRequest request);
 
-    Product updateProduct(Product product);
+    Product getProductById(UUID id);
 
-    Optional<Product> getProductById(UUID id);
+    List<Product> getProductsByDescription(String description);
 
     List<Product> getAllProducts();
+
+    Product updateProduct(UUID id, UpdateProductRequest request);
 
     void deleteProductById(UUID id);
 

@@ -1,0 +1,89 @@
+package com.vr61v.SpringShoppingBot.controller.impl;
+
+import com.vr61v.SpringShoppingBot.controller.ProductController;
+import com.vr61v.SpringShoppingBot.document.Product;
+import com.vr61v.SpringShoppingBot.document.request.product.CreateProductRequest;
+import com.vr61v.SpringShoppingBot.document.request.product.UpdateProductRequest;
+import com.vr61v.SpringShoppingBot.service.ProductService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.UUID;
+
+@Slf4j
+@Component
+@RequiredArgsConstructor
+public class ProductControllerTelegramBot implements ProductController {
+
+    private final ProductService productService;
+
+    @Override
+    public ResponseEntity<?> createProduct(CreateProductRequest request) {
+        Product product = productService.saveProduct(request);
+        log.info("Create product: {}", product);
+        return ResponseEntity.status(HttpStatus.CREATED).body(product);
+    }
+
+    @Override
+    public ResponseEntity<?> getProductById(UUID id) {
+        Product product = productService.getProductById(id);
+        if (product == null) {
+            log.info("Product with id {} not found", id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        log.info("Get product by id {}: {}", id, product);
+        return ResponseEntity.status(HttpStatus.OK).body(product);
+    }
+
+    @Override
+    public ResponseEntity<?> getProductByDescription(String description) {
+        List<Product> products = productService.getProductsByDescription(description);
+        if (products.isEmpty()) {
+            log.info("Products with description \"{}\" not found", description);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        log.info("Get products by description \"{}\": {}", description, products);
+        return ResponseEntity.status(HttpStatus.OK).body(products);
+    }
+
+    @Override
+    public ResponseEntity<?> getAllProducts() {
+        List<Product> products = productService.getAllProducts();
+        if (products.isEmpty()) {
+            log.info("Products not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        log.info("Get all products: {}", products);
+        return ResponseEntity.status(HttpStatus.OK).body(products);
+    }
+
+    @Override
+    public ResponseEntity<?> updateProduct(UUID id, UpdateProductRequest request) {
+        Product product;
+        try {
+            product = productService.updateProduct(id, request);
+        } catch (Exception e) {
+            log.error("Update product with id {} failed: {}", id, e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+        log.info("Update product with id {}: {}", id, product);
+        return ResponseEntity.status(HttpStatus.OK).body(product);
+    }
+
+    @Override
+    public ResponseEntity<?> deleteProduct(UUID id) {
+        try {
+            productService.deleteProductById(id);
+        } catch (Exception e) {
+            log.error("Delete product with id {} failed: {}", id, e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+        log.info("Delete product with id {}", id);
+        return ResponseEntity.status(HttpStatus.OK).body(id);
+    }
+
+}
