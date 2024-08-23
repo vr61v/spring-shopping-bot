@@ -1,6 +1,10 @@
 package com.vr61v.SpringShoppingBot.interceptor;
 
+import com.vr61v.SpringShoppingBot.controller.impl.CategoryControllerTelegramBot;
 import com.vr61v.SpringShoppingBot.controller.impl.ProductControllerTelegramBot;
+import com.vr61v.SpringShoppingBot.controller.impl.VendorControllerTelegramBot;
+import com.vr61v.SpringShoppingBot.document.Category;
+import com.vr61v.SpringShoppingBot.document.Vendor;
 import com.vr61v.SpringShoppingBot.document.request.product.CreateProductRequest;
 import com.vr61v.SpringShoppingBot.entity.UserState;
 import com.vr61v.SpringShoppingBot.ui.ProductMenuUI;
@@ -11,16 +15,15 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Component
 @RequiredArgsConstructor
 public class ProductRequestInterceptor {
 
     private final ProductControllerTelegramBot productController;
+    private final CategoryControllerTelegramBot categoryController;
+    private final VendorControllerTelegramBot vendorController;
 
     private final static int START_PREV_PAGE = 0;
     private final static int START_CURRENT_PAGE = 1;
@@ -101,15 +104,24 @@ public class ProductRequestInterceptor {
         String price = map.get("price");
         String count = map.get("count");
         String description = map.get("description");
-        String category = map.get("category");
-        String vendor = map.get("vendor");
 
-        // Get category and vendor and search id in database
-        // if not exists then create new category
-        // ...
+        String categoryName = map.get("category");
+        ResponseEntity<?> categoryResponse = categoryController.getCategoryByName(categoryName);
+        UUID categoryId;
+        if (categoryResponse.getStatusCode().is2xxSuccessful()) {
+            categoryId = ((Category) Objects.requireNonNull(categoryResponse.getBody())).getId();
+        } else {
+            return SendMessage.builder().chatId(chatId).text("Invalid category").build();
+        }
 
-        UUID categoryId = UUID.randomUUID();
-        UUID vendorId = UUID.randomUUID();
+        String vendorName = map.get("category");
+        ResponseEntity<?> vendorResponse = vendorController.getVendorByName(vendorName);
+        UUID vendorId;
+        if (vendorResponse.getStatusCode().is2xxSuccessful()) {
+            vendorId = ((Vendor) Objects.requireNonNull(vendorResponse.getBody())).getId();
+        } else {
+            return SendMessage.builder().chatId(chatId).text("Invalid vendor").build();
+        }
 
         CreateProductRequest createProductRequest = new CreateProductRequest(
                 name,
