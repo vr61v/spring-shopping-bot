@@ -1,24 +1,30 @@
 package com.vr61v.SpringShoppingBot.controller;
 
 
+import com.vr61v.SpringShoppingBot.document.Product;
 import com.vr61v.SpringShoppingBot.document.request.product.CreateProductRequest;
 import com.vr61v.SpringShoppingBot.document.request.product.UpdateProductRequest;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface ProductController {
 
-    ResponseEntity<?> createProduct(CreateProductRequest request);
+    ResponseEntity<Product> createProduct(CreateProductRequest request);
 
-    ResponseEntity<?> getProductById(UUID id);
+    ResponseEntity<Product> getProductById(UUID id);
 
-    ResponseEntity<?> getProductByDescription(String description);
+    ResponseEntity<List<Product>> getProductByDescription(String description);
 
-    ResponseEntity<?> getAllProducts();
+    ResponseEntity<List<Product>> getProductsByCategoryId(UUID categoryId);
 
-    ResponseEntity<?> updateProduct(UUID id, UpdateProductRequest request);
+    ResponseEntity<List<Product>> getProductsByVendorId(UUID vendorId);
 
-    ResponseEntity<?> deleteProduct(UUID id);
+    ResponseEntity<List<Product>> getAllProducts();
+
+    ResponseEntity<Product> updateProduct(UUID id, UpdateProductRequest request);
+
+    ResponseEntity<Product> deleteProduct(UUID id);
 
 }

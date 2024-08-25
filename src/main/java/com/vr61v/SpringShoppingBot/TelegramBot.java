@@ -2,6 +2,7 @@ package com.vr61v.SpringShoppingBot;
 
 import com.vr61v.SpringShoppingBot.config.BotConfig;
 import com.vr61v.SpringShoppingBot.entity.UserState;
+import com.vr61v.SpringShoppingBot.interceptor.AdminRequestInterceptor;
 import com.vr61v.SpringShoppingBot.interceptor.ProductRequestInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -25,7 +26,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     private final ProductRequestInterceptor productRequestInterceptor;
 
-    private final static String HELLO_STRING = "Hello, %s %s!";
+    private final AdminRequestInterceptor adminRequestInterceptor;
 
     private final static HashMap<String, UserState> chatState = new HashMap<>();
 
@@ -38,6 +39,12 @@ public class TelegramBot extends TelegramLongPollingBot {
             String data = update.getCallbackQuery().getData();
             if (data.startsWith("PRODUCT_")) {
                 sendMessage = productRequestInterceptor.interceptRequest(callbackQuery, data, chatState);
+            } else if (data.startsWith("ADMIN_")) {
+                sendMessage = adminRequestInterceptor.interceptRequest(callbackQuery, data, chatState);
+            } else if (data.equals("BACK_TO_MAIN_MENU")) {
+                update.setMessage(update.getCallbackQuery().getMessage());
+                startBotCommand(update);
+                return;
             }
         } else if (update.hasMessage() && update.getMessage().hasText()) { // Check if the command is called
             Message message = update.getMessage();
@@ -48,8 +55,25 @@ public class TelegramBot extends TelegramLongPollingBot {
                 startBotCommand(update);
             } else if (userState == UserState.PRODUCT_WAITING_CREATE_REQUEST) {
                 chatState.remove(username);
-                sendMessage = productRequestInterceptor.createProduct(message.getChatId().toString(), messageText);
+                sendMessage = adminRequestInterceptor.createProduct(message.getChatId().toString(), messageText);
+            } else if (userState == UserState.PRODUCT_WAITING_DELETE_REQUEST) {
+                chatState.remove(username);
+                sendMessage = adminRequestInterceptor.deleteProduct(message.getChatId().toString(), messageText);
+            } else if (userState == UserState.CATEGORY_WAITING_CREATE_REQUEST) {
+                chatState.remove(username);
+                sendMessage = adminRequestInterceptor.createCategory(message.getChatId().toString(), messageText);
+            } else if (userState == UserState.CATEGORY_WAITING_DELETE_REQUEST) {
+                chatState.remove(username);
+                sendMessage = adminRequestInterceptor.deleteCategory(message.getChatId().toString(), messageText);
+            } else if (userState == UserState.VENDOR_WAITING_CREATE_REQUEST) {
+                chatState.remove(username);
+                sendMessage = adminRequestInterceptor.createVendor(message.getChatId().toString(), messageText);
+            } else if (userState == UserState.VENDOR_WAITING_DELETE_REQUEST) {
+                chatState.remove(username);
+                sendMessage = adminRequestInterceptor.deleteVendor(message.getChatId().toString(), messageText);
             }
+        } else {
+            sendMessage = SendMessage.builder().chatId(update.getMessage().getChatId().toString()).text("Unknown command").build();
         }
 
         try {
@@ -73,18 +97,21 @@ public class TelegramBot extends TelegramLongPollingBot {
         Message message = update.getMessage();
         SendMessage sendMessage = SendMessage.builder()
                 .chatId(message.getChatId().toString())
-                .text(String.format(HELLO_STRING, message.getFrom().getFirstName(), message.getFrom().getLastName()))
+                .text("Main menu")
                 .build();
-        InlineKeyboardButton button = InlineKeyboardButton.builder()
+        InlineKeyboardButton openProductMenu = InlineKeyboardButton.builder()
                 .text("Open product menu")
                 .callbackData("PRODUCT_OPEN_MENU")
                 .build();
-        List<InlineKeyboardButton> row1 = List.of(button);
-        List<List<InlineKeyboardButton>> rows = List.of(row1);
-        InlineKeyboardMarkup inlineKeyboardMarkup = InlineKeyboardMarkup.builder()
-                .keyboard(rows)
+        InlineKeyboardButton openAdminMenu = InlineKeyboardButton.builder()
+                .text("Open admin menu")
+                .callbackData("ADMIN_OPEN_MENU")
                 .build();
-        sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+        List<List<InlineKeyboardButton>> buttons = List.of(
+                List.of(openProductMenu),
+                List.of(openAdminMenu)
+        );
+        sendMessage.setReplyMarkup(new InlineKeyboardMarkup(buttons));
 
         try {
             execute(sendMessage);

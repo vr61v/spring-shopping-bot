@@ -4,7 +4,7 @@ public record UpdateVendorRequest(
 
         String name,
 
-        Boolean description
+        String description
 
 ) {
 }

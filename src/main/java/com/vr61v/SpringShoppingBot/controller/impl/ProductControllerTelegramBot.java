@@ -22,14 +22,14 @@ public class ProductControllerTelegramBot implements ProductController {
     private final ProductService productService;
 
     @Override
-    public ResponseEntity<?> createProduct(CreateProductRequest request) {
+    public ResponseEntity<Product> createProduct(CreateProductRequest request) {
         Product product = productService.saveProduct(request);
         log.info("Create product: {}", product);
         return ResponseEntity.status(HttpStatus.CREATED).body(product);
     }
 
     @Override
-    public ResponseEntity<?> getProductById(UUID id) {
+    public ResponseEntity<Product> getProductById(UUID id) {
         Product product = productService.getProductById(id);
         if (product == null) {
             log.info("Product with id {} not found", id);
@@ -40,7 +40,7 @@ public class ProductControllerTelegramBot implements ProductController {
     }
 
     @Override
-    public ResponseEntity<?> getProductByDescription(String description) {
+    public ResponseEntity<List<Product>> getProductByDescription(String description) {
         List<Product> products = productService.getProductsByDescription(description);
         if (products.isEmpty()) {
             log.info("Products with description \"{}\" not found", description);
@@ -51,7 +51,29 @@ public class ProductControllerTelegramBot implements ProductController {
     }
 
     @Override
-    public ResponseEntity<?> getAllProducts() {
+    public ResponseEntity<List<Product>> getProductsByCategoryId(UUID categoryId) {
+        List<Product> products = productService.getProductsByCategoryId(categoryId);
+        if (products.isEmpty()) {
+            log.info("Products with category id {} not found", categoryId);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        log.info("Get products by category id {}: {}", categoryId, products);
+        return ResponseEntity.status(HttpStatus.OK).body(products);
+    }
+
+    @Override
+    public ResponseEntity<List<Product>> getProductsByVendorId(UUID vendorId) {
+        List<Product> products = productService.getProductsByVendorId(vendorId);
+        if (products.isEmpty()) {
+            log.info("Products with vendor id {} not found", vendorId);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        log.info("Get products by vendor id {}: {}", vendorId, products);
+        return ResponseEntity.status(HttpStatus.OK).body(products);
+    }
+
+    @Override
+    public ResponseEntity<List<Product>> getAllProducts() {
         List<Product> products = productService.getAllProducts();
         if (products.isEmpty()) {
             log.info("Products not found");
@@ -62,28 +84,28 @@ public class ProductControllerTelegramBot implements ProductController {
     }
 
     @Override
-    public ResponseEntity<?> updateProduct(UUID id, UpdateProductRequest request) {
+    public ResponseEntity<Product> updateProduct(UUID id, UpdateProductRequest request) {
         Product product;
         try {
             product = productService.updateProduct(id, request);
         } catch (Exception e) {
             log.error("Update product with id {} failed: {}", id, e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         log.info("Update product with id {}: {}", id, product);
         return ResponseEntity.status(HttpStatus.OK).body(product);
     }
 
     @Override
-    public ResponseEntity<?> deleteProduct(UUID id) {
+    public ResponseEntity<Product> deleteProduct(UUID id) {
         try {
             productService.deleteProductById(id);
         } catch (Exception e) {
             log.error("Delete product with id {} failed: {}", id, e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         log.info("Delete product with id {}", id);
-        return ResponseEntity.status(HttpStatus.OK).body(id);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
 }

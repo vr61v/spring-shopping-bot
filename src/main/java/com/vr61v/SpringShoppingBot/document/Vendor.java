@@ -25,6 +25,6 @@ public class Vendor {
     private String name;
 
     @Field(type = FieldType.Text, name = "description")
-    private Boolean description;
+    private String description;
 
 }

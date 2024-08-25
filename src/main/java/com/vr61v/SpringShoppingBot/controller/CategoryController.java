@@ -1,24 +1,26 @@
 package com.vr61v.SpringShoppingBot.controller;
 
+import com.vr61v.SpringShoppingBot.document.Category;
 import com.vr61v.SpringShoppingBot.document.request.category.CreateCategoryRequest;
 import com.vr61v.SpringShoppingBot.document.request.category.UpdateCategoryRequest;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface CategoryController {
 
-    ResponseEntity<?> createCategory(CreateCategoryRequest request);
+    ResponseEntity<Category> createCategory(CreateCategoryRequest request);
 
-    ResponseEntity<?> getCategoryById(UUID id);
+    ResponseEntity<Category> getCategoryById(UUID id);
 
-    ResponseEntity<?> getCategoryByName(String name);
+    ResponseEntity<Category> getCategoryByName(String name);
 
-    ResponseEntity<?> getAllCategories();
+    ResponseEntity<List<Category>> getAllCategories();
 
-    ResponseEntity<?> updateCategory(UUID id, UpdateCategoryRequest request);
+    ResponseEntity<Category> updateCategory(UUID id, UpdateCategoryRequest request);
 
-    ResponseEntity<?> deleteCategory(UUID id);
+    ResponseEntity<Category> deleteCategory(UUID id);
 
 
 }

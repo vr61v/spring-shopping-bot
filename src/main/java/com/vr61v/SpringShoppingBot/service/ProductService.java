@@ -3,6 +3,7 @@ package com.vr61v.SpringShoppingBot.service;
 import com.vr61v.SpringShoppingBot.document.Product;
 import com.vr61v.SpringShoppingBot.document.request.product.CreateProductRequest;
 import com.vr61v.SpringShoppingBot.document.request.product.UpdateProductRequest;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.UUID;
@@ -14,6 +15,10 @@ public interface ProductService {
     Product getProductById(UUID id);
 
     List<Product> getProductsByDescription(String description);
+
+    List<Product> getProductsByCategoryId(UUID categoryId);
+
+    List<Product> getProductsByVendorId(UUID vendorId);
 
     List<Product> getAllProducts();
 

@@ -22,14 +22,14 @@ public class VendorControllerTelegramBot implements VendorController {
     private final VendorService vendorService;
 
     @Override
-    public ResponseEntity<?> createVendor(CreateVendorRequest request) {
+    public ResponseEntity<Vendor> createVendor(CreateVendorRequest request) {
         Vendor vendor = vendorService.saveVendor(request);
         log.info("Create vendor: {}", vendor);
         return ResponseEntity.status(HttpStatus.CREATED).body(vendor);
     }
 
     @Override
-    public ResponseEntity<?> getVendorById(UUID id) {
+    public ResponseEntity<Vendor> getVendorById(UUID id) {
         Vendor vendor = vendorService.getVendorById(id);
         if (vendor == null) {
             log.info("Get vendor with id {} not found", id);
@@ -40,18 +40,18 @@ public class VendorControllerTelegramBot implements VendorController {
     }
 
     @Override
-    public ResponseEntity<?> getVendorByName(String name) {
+    public ResponseEntity<Vendor> getVendorByName(String name) {
         Vendor vendor = vendorService.getVendorByName(name);
         if (vendor == null) {
             log.info("Get vendor with name {} not found", name);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         log.info("Get vendor by name {}: {}", name, vendor);
-        return null;
+        return ResponseEntity.status(HttpStatus.OK).body(vendor);
     }
 
     @Override
-    public ResponseEntity<?> getAllVendors() {
+    public ResponseEntity<List<Vendor>> getAllVendors() {
         List<Vendor> vendors = vendorService.getAllVendors();
         if (vendors.isEmpty()) {
             log.info("Vendors not found");
@@ -62,7 +62,7 @@ public class VendorControllerTelegramBot implements VendorController {
     }
 
     @Override
-    public ResponseEntity<?> updateVendor(UUID id, UpdateVendorRequest request) {
+    public ResponseEntity<Vendor> updateVendor(UUID id, UpdateVendorRequest request) {
         Vendor vendor;
         try {
             vendor = vendorService.updateVendor(id, request);
@@ -75,7 +75,7 @@ public class VendorControllerTelegramBot implements VendorController {
     }
 
     @Override
-    public ResponseEntity<?> deleteVendor(UUID id) {
+    public ResponseEntity<Vendor> deleteVendor(UUID id) {
         try {
             vendorService.deleteVendorById(id);
         } catch (Exception e) {

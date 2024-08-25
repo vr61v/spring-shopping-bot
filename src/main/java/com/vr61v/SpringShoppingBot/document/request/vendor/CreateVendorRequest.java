@@ -9,7 +9,7 @@ public record CreateVendorRequest(
         String name,
 
         @NotBlank @NotNull
-        Boolean description
+        String description
 
 ) {
 }

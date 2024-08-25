@@ -8,6 +8,7 @@ import com.vr61v.SpringShoppingBot.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -42,8 +43,21 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public List<Product> getProductsByCategoryId(UUID categoryId) {
+        return productRepository.findByCategory(categoryId);
+    }
+
+    @Override
+    public List<Product> getProductsByVendorId(UUID vendorId) {
+        return productRepository.findByVendor(vendorId);
+    }
+
+    @Override
     public List<Product> getAllProducts() {
-        return List.of((Product) productRepository.findAll());
+        Iterable<Product> products = productRepository.findAll();
+        List<Product> productList = new ArrayList<>();
+        for (Product product : products) productList.add(product);
+        return productList;
     }
 
     @Override

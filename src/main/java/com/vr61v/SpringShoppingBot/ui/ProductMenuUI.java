@@ -10,6 +10,8 @@ import java.util.List;
 public interface ProductMenuUI {
 
     static SendMessage getProductUI(String chatId, List<String> productNames, int prevPage, int currentPage, int nextPage, int totalPage) {
+        if (productNames.isEmpty()) return SendMessage.builder().chatId(chatId).text("Products not found").build();
+
         SendMessage sendMessage = SendMessage.builder()
                 .chatId(chatId)
                 .text(parseProductNamesToMessageText(productNames))
@@ -35,10 +37,11 @@ public interface ProductMenuUI {
                 .text("Add product to favorites")
                 .callbackData("PRODUCT_ADD_TO_FAVORITES")
                 .build();
-        InlineKeyboardButton createProduct = InlineKeyboardButton.builder()
-                .text("Create new product (only for admin)")
-                .callbackData("PRODUCT_CREATE")
+        InlineKeyboardButton backButton = InlineKeyboardButton.builder()
+                .text("Back")
+                .callbackData("BACK_TO_MAIN_MENU")
                 .build();
+
 
         List<InlineKeyboardButton> navigationRow = new ArrayList<>();
         if (prevPage > 0) navigationRow.add(prevButton);
@@ -49,7 +52,7 @@ public interface ProductMenuUI {
                 navigationRow,
                 List.of(addProductToBucket),
                 List.of(addProductToFavorites),
-                List.of(createProduct)
+                List.of(backButton)
         );
 
         sendMessage.setReplyMarkup(new InlineKeyboardMarkup(buttons));

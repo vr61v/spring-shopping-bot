@@ -22,14 +22,14 @@ public class CategoryControllerTelegramBot implements CategoryController {
     private final CategoryService categoryService;
 
     @Override
-    public ResponseEntity<?> createCategory(CreateCategoryRequest request) {
+    public ResponseEntity<Category> createCategory(CreateCategoryRequest request) {
         Category category = categoryService.saveCategory(request);
         log.info("Create category: {}", category);
         return ResponseEntity.status(HttpStatus.CREATED).body(category);
     }
 
     @Override
-    public ResponseEntity<?> getCategoryById(UUID id) {
+    public ResponseEntity<Category> getCategoryById(UUID id) {
         Category category = categoryService.getCategoryById(id);
         if (category == null) {
             log.info("Category with id {} not found", id);
@@ -40,7 +40,7 @@ public class CategoryControllerTelegramBot implements CategoryController {
     }
 
     @Override
-    public ResponseEntity<?> getCategoryByName(String name) {
+    public ResponseEntity<Category> getCategoryByName(String name) {
         Category category = categoryService.getCategoryByName(name);
         if (category == null) {
             log.info("Category with name {} not found", name);
@@ -51,7 +51,7 @@ public class CategoryControllerTelegramBot implements CategoryController {
     }
 
     @Override
-    public ResponseEntity<?> getAllCategories() {
+    public ResponseEntity<List<Category>> getAllCategories() {
         List<Category> categories = categoryService.getAllCategories();
         if (categories.isEmpty()) {
             log.info("Categories not found");
@@ -62,7 +62,7 @@ public class CategoryControllerTelegramBot implements CategoryController {
     }
 
     @Override
-    public ResponseEntity<?> updateCategory(UUID id, UpdateCategoryRequest request) {
+    public ResponseEntity<Category> updateCategory(UUID id, UpdateCategoryRequest request) {
         Category category;
         try {
             category = categoryService.updateCategory(id, request);
@@ -75,7 +75,7 @@ public class CategoryControllerTelegramBot implements CategoryController {
     }
 
     @Override
-    public ResponseEntity<?> deleteCategory(UUID id) {
+    public ResponseEntity<Category> deleteCategory(UUID id) {
         try {
             categoryService.deleteCategoryById(id);
         } catch (Exception e) {
@@ -83,6 +83,6 @@ public class CategoryControllerTelegramBot implements CategoryController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         log.info("Delete category with id {}", id);
-        return ResponseEntity.status(HttpStatus.OK).body(id);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
