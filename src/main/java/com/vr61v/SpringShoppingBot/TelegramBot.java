@@ -2,8 +2,7 @@ package com.vr61v.SpringShoppingBot;
 
 import com.vr61v.SpringShoppingBot.config.BotConfig;
 import com.vr61v.SpringShoppingBot.entity.UserState;
-import com.vr61v.SpringShoppingBot.interceptor.AdminRequestInterceptor;
-import com.vr61v.SpringShoppingBot.interceptor.ProductRequestInterceptor;
+import com.vr61v.SpringShoppingBot.interceptor.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -17,6 +16,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -28,7 +28,23 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     private final AdminRequestInterceptor adminRequestInterceptor;
 
+    private final AdminProductRequestInterceptor adminProductRequestInterceptor;
+
+    private final AdminCategoryRequestInterceptor adminCategoryRequestInterceptor;
+
+    private final AdminVendorRequestInterceptor adminVendorRequestInterceptor;
+
     private final static HashMap<String, UserState> chatState = new HashMap<>();
+
+    private Map<String, String> parseMessageToField(String entity) {
+        List<String> lines = List.of(entity.split("\n"));
+        Map<String, String> map = new HashMap<>();
+        for (String line : lines) {
+            String[] keyValue = line.split(":");
+            map.put(keyValue[0], keyValue[1]);
+        }
+        return map;
+    }
 
     @Override
     public void onUpdateReceived(Update update) {
@@ -55,22 +71,44 @@ public class TelegramBot extends TelegramLongPollingBot {
                 startBotCommand(update);
             } else if (userState == UserState.PRODUCT_WAITING_CREATE_REQUEST) {
                 chatState.remove(username);
-                sendMessage = adminRequestInterceptor.createProduct(message.getChatId().toString(), messageText);
+                sendMessage = adminProductRequestInterceptor.createProduct(message.getChatId().toString(), parseMessageToField(messageText));
+            } else if (userState == UserState.PRODUCT_WAITING_UPDATE_REQUEST) {
+                chatState.put(username, userState);
+                sendMessage = adminProductRequestInterceptor.updateProduct(message.getChatId().toString(), parseMessageToField(messageText));
+            } else if (userState == UserState.PRODUCT_WAITING_SEARCH_REQUEST) {
+                chatState.remove(username);
+                sendMessage = adminProductRequestInterceptor.searchProducts(message.getChatId().toString(), messageText);
             } else if (userState == UserState.PRODUCT_WAITING_DELETE_REQUEST) {
                 chatState.remove(username);
-                sendMessage = adminRequestInterceptor.deleteProduct(message.getChatId().toString(), messageText);
-            } else if (userState == UserState.CATEGORY_WAITING_CREATE_REQUEST) {
+                sendMessage = adminProductRequestInterceptor.deleteProduct(message.getChatId().toString(), messageText);
+            }
+
+            else if (userState == UserState.CATEGORY_WAITING_CREATE_REQUEST) {
                 chatState.remove(username);
-                sendMessage = adminRequestInterceptor.createCategory(message.getChatId().toString(), messageText);
+                sendMessage = adminCategoryRequestInterceptor.createCategory(message.getChatId().toString(), parseMessageToField(messageText));
+            } else if (userState == UserState.CATEGORY_WAITING_UPDATE_REQUEST) {
+                chatState.put(username, userState);
+                sendMessage = adminCategoryRequestInterceptor.updateCategory(message.getChatId().toString(), parseMessageToField(messageText));
+            } else if (userState == UserState.CATEGORY_WAITING_SEARCH_REQUEST) {
+                chatState.remove(username);
+                sendMessage = adminCategoryRequestInterceptor.searchCategory(message.getChatId().toString(), messageText);
             } else if (userState == UserState.CATEGORY_WAITING_DELETE_REQUEST) {
                 chatState.remove(username);
-                sendMessage = adminRequestInterceptor.deleteCategory(message.getChatId().toString(), messageText);
-            } else if (userState == UserState.VENDOR_WAITING_CREATE_REQUEST) {
+                sendMessage = adminCategoryRequestInterceptor.deleteCategory(message.getChatId().toString(), messageText);
+            }
+
+            else if (userState == UserState.VENDOR_WAITING_CREATE_REQUEST) {
                 chatState.remove(username);
-                sendMessage = adminRequestInterceptor.createVendor(message.getChatId().toString(), messageText);
+                sendMessage = adminVendorRequestInterceptor.createVendor(message.getChatId().toString(), parseMessageToField(messageText));
+            } else if (userState == UserState.VENDOR_WAITING_UPDATE_REQUEST) {
+                chatState.put(username, userState);
+                sendMessage = adminVendorRequestInterceptor.updateVendor(message.getChatId().toString(), parseMessageToField(messageText));
+            } else if (userState == UserState.VENDOR_WAITING_SEARCH_REQUEST) {
+                chatState.remove(username);
+                sendMessage = adminVendorRequestInterceptor.searchVendor(message.getChatId().toString(), messageText);
             } else if (userState == UserState.VENDOR_WAITING_DELETE_REQUEST) {
                 chatState.remove(username);
-                sendMessage = adminRequestInterceptor.deleteVendor(message.getChatId().toString(), messageText);
+                sendMessage = adminVendorRequestInterceptor.deleteVendor(message.getChatId().toString(), messageText);
             }
         } else {
             sendMessage = SendMessage.builder().chatId(update.getMessage().getChatId().toString()).text("Unknown command").build();

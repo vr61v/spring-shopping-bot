@@ -57,4 +57,5 @@ public class VendorServiceImpl implements VendorService {
     public void deleteVendorById(UUID id) {
         vendorRepository.deleteById(id);
     }
+
 }

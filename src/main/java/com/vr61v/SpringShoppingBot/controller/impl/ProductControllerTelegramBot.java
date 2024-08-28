@@ -40,6 +40,17 @@ public class ProductControllerTelegramBot implements ProductController {
     }
 
     @Override
+    public ResponseEntity<List<Product>> getProductsByName(String name) {
+        List<Product> product = productService.getProductsByName(name);
+        if (product.isEmpty()) {
+            log.info("Products with name {} not found", name);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        log.info("Get products by name {}: {}", name, product);
+        return ResponseEntity.status(HttpStatus.OK).body(product);
+    }
+
+    @Override
     public ResponseEntity<List<Product>> getProductByDescription(String description) {
         List<Product> products = productService.getProductsByDescription(description);
         if (products.isEmpty()) {

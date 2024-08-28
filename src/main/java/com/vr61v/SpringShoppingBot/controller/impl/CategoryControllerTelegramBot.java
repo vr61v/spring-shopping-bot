@@ -85,4 +85,5 @@ public class CategoryControllerTelegramBot implements CategoryController {
         log.info("Delete category with id {}", id);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
 }

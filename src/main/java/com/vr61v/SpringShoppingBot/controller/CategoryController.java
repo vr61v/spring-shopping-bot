@@ -22,5 +22,4 @@ public interface CategoryController {
 
     ResponseEntity<Category> deleteCategory(UUID id);
 
-
 }

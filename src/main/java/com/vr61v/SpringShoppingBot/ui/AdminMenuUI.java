@@ -15,41 +15,68 @@ public interface AdminMenuUI {
                 .build();
 
         InlineKeyboardButton createProduct = InlineKeyboardButton.builder()
-                .text("Create new product (only for admin)")
+                .text("Create product")
                 .callbackData("ADMIN_PRODUCT_CREATE")
                 .build();
+        InlineKeyboardButton updateProduct = InlineKeyboardButton.builder()
+                .text("Update product")
+                .callbackData("ADMIN_PRODUCT_UPDATE")
+                .build();
+        InlineKeyboardButton searchProduct = InlineKeyboardButton.builder()
+                .text("Search product")
+                .callbackData("ADMIN_PRODUCT_SEARCH")
+                .build();
         InlineKeyboardButton deleteProduct = InlineKeyboardButton.builder()
-                .text("Delete product (only for admin)")
+                .text("Delete product")
                 .callbackData("ADMIN_PRODUCT_DELETE")
                 .build();
+
         InlineKeyboardButton createCategory = InlineKeyboardButton.builder()
-                .text("Create new category (only for admin)")
+                .text("Create category")
                 .callbackData("ADMIN_CATEGORY_CREATE")
                 .build();
+        InlineKeyboardButton updateCategory = InlineKeyboardButton.builder()
+                .text("Update category")
+                .callbackData("ADMIN_CATEGORY_UPDATE")
+                .build();
+        InlineKeyboardButton searchCategory = InlineKeyboardButton.builder()
+                .text("Search category")
+                .callbackData("ADMIN_CATEGORY_SEARCH")
+                .build();
         InlineKeyboardButton deleteCategory = InlineKeyboardButton.builder()
-                .text("Delete category (only for admin)")
+                .text("Delete category")
                 .callbackData("ADMIN_CATEGORY_DELETE")
                 .build();
+
         InlineKeyboardButton createVendor = InlineKeyboardButton.builder()
-                .text("Create new vendor (only for admin)")
+                .text("Create vendor")
                 .callbackData("ADMIN_VENDOR_CREATE")
                 .build();
+        InlineKeyboardButton updateVendor = InlineKeyboardButton.builder()
+                .text("Update vendor")
+                .callbackData("ADMIN_VENDOR_UPDATE")
+                .build();
+        InlineKeyboardButton searchVendor = InlineKeyboardButton.builder()
+                .text("Search vendor")
+                .callbackData("ADMIN_VENDOR_SEARCH")
+                .build();
         InlineKeyboardButton deleteVendor = InlineKeyboardButton.builder()
-                .text("Delete vendor (only for admin)")
+                .text("Delete vendor")
                 .callbackData("ADMIN_VENDOR_DELETE")
                 .build();
+
         InlineKeyboardButton backButton = InlineKeyboardButton.builder()
                 .text("Back")
                 .callbackData("BACK_TO_MAIN_MENU")
                 .build();
 
         List<List<InlineKeyboardButton>> buttons = List.of(
-                List.of(createProduct),
-                List.of(deleteProduct),
-                List.of(createCategory),
-                List.of(deleteCategory),
-                List.of(createVendor),
-                List.of(deleteVendor),
+                List.of(createProduct, updateProduct),
+                List.of(searchProduct, deleteProduct),
+                List.of(createCategory, updateCategory),
+                List.of(searchCategory, deleteCategory),
+                List.of(createVendor, updateVendor),
+                List.of(searchVendor, deleteVendor),
                 List.of(backButton)
         );
 

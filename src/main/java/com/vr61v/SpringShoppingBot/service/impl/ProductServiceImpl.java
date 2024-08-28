@@ -38,18 +38,23 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public List<Product> getProductsByName(String name) {
+        return productRepository.findByName(name);
+    }
+
+    @Override
     public List<Product> getProductsByDescription(String description) {
         return productRepository.findByDescriptionContainingIgnoreCase(description);
     }
 
     @Override
     public List<Product> getProductsByCategoryId(UUID categoryId) {
-        return productRepository.findByCategory(categoryId);
+        return productRepository.findByCategoryId(categoryId);
     }
 
     @Override
     public List<Product> getProductsByVendorId(UUID vendorId) {
-        return productRepository.findByVendor(vendorId);
+        return productRepository.findByVendorId(vendorId);
     }
 
     @Override
@@ -79,4 +84,5 @@ public class ProductServiceImpl implements ProductService {
     public void deleteProductById(UUID id) {
         productRepository.deleteById(id);
     }
+
 }

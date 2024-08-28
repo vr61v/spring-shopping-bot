@@ -85,4 +85,5 @@ public class VendorControllerTelegramBot implements VendorController {
         log.info("Delete vendor with id {}", id);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
 }

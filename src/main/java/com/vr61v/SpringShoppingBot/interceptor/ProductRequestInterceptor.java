@@ -22,9 +22,13 @@ public class ProductRequestInterceptor {
     private final ProductControllerTelegramBot productController;
 
     private static int totalCountOfPages = 0;
+
     private final static int START_PREV_PAGE = 0;
+
     private final static int START_CURRENT_PAGE = 1;
+
     private final static int START_NEXT_PAGE = 2;
+
     private final static int COUNT_OF_PRODUCT_ON_PAGE = 5;
 
     private List<String> getCurrentPageInAlphabetOrder(Integer number, Integer size) {

@@ -1,6 +1,5 @@
 package com.vr61v.SpringShoppingBot.controller;
 
-
 import com.vr61v.SpringShoppingBot.document.Product;
 import com.vr61v.SpringShoppingBot.document.request.product.CreateProductRequest;
 import com.vr61v.SpringShoppingBot.document.request.product.UpdateProductRequest;
@@ -14,6 +13,8 @@ public interface ProductController {
     ResponseEntity<Product> createProduct(CreateProductRequest request);
 
     ResponseEntity<Product> getProductById(UUID id);
+
+    ResponseEntity<List<Product>> getProductsByName(String name);
 
     ResponseEntity<List<Product>> getProductByDescription(String description);
 

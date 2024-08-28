@@ -7,11 +7,6 @@ import org.opensearch.data.client.orhlc.RestClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.net.http.HttpHeaders;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 @Configuration
 public class RestClientConfig extends AbstractOpenSearchConfiguration {
 
@@ -25,4 +20,5 @@ public class RestClientConfig extends AbstractOpenSearchConfiguration {
 
         return RestClients.create(clientConfiguration).rest();
     }
+
 }
