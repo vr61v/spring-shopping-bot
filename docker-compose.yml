@@ -19,3 +19,19 @@ services:
     environment:
       OPENSEARCH_HOSTS: '["http://shop_os:9200"]'
       DISABLE_SECURITY_DASHBOARDS_PLUGIN: "true"
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=username
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    volumes:
+      - mongodb-config:/data/configdb
+      - mongodb-data:/data/db
+    ports:
+      - "27017:27017"
+    restart: unless-stopped
+
+volumes:
+  mongodb-config:
+  mongodb-data:

@@ -14,6 +14,8 @@ public interface ProductController {
 
     ResponseEntity<Product> getProductById(UUID id);
 
+    ResponseEntity<List<Product>> getProducts(List<UUID> ids);
+
     ResponseEntity<List<Product>> getProductsByName(String name);
 
     ResponseEntity<List<Product>> getProductByDescription(String description);

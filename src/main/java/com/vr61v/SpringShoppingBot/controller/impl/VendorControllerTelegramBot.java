@@ -57,7 +57,7 @@ public class VendorControllerTelegramBot implements VendorController {
             log.info("Vendors not found");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        log.info("Get all vendors: {}", vendors);
+        log.info("Get all vendors");
         return ResponseEntity.status(HttpStatus.OK).body(vendors);
     }
 

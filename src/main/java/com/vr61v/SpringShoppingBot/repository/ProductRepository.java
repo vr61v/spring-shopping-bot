@@ -10,6 +10,8 @@ import java.util.UUID;
 @Repository
 public interface ProductRepository extends ElasticsearchRepository<Product, UUID> {
 
+    List<Product> findAllByIdIn(List<UUID> ids);
+
     List<Product> findByName(String name);
 
     List<Product> findByDescriptionContainingIgnoreCase(String description);

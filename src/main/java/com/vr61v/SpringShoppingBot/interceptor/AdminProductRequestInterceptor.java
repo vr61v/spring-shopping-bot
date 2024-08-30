@@ -48,7 +48,6 @@ public class AdminProductRequestInterceptor {
         CreateProductRequest request = new CreateProductRequest(
                 name,
                 price != null ? Float.parseFloat(price) : 0,
-                count != null ? Integer.parseInt(count) : 0,
                 description,
                 categoryId,
                 vendorId
@@ -81,7 +80,6 @@ public class AdminProductRequestInterceptor {
         UpdateProductRequest request = new UpdateProductRequest(
                 name,
                 price,
-                count,
                 description,
                 categoryResponse.getBody() != null ? categoryResponse.getBody().getId() : null,
                 vendorResponse.getBody() != null ? vendorResponse.getBody().getId() : null

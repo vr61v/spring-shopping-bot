@@ -26,6 +26,8 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     private final ProductRequestInterceptor productRequestInterceptor;
 
+    private final CartRequestInterceptor cartRequestInterceptor;
+
     private final AdminRequestInterceptor adminRequestInterceptor;
 
     private final AdminProductRequestInterceptor adminProductRequestInterceptor;
@@ -55,6 +57,8 @@ public class TelegramBot extends TelegramLongPollingBot {
             String data = update.getCallbackQuery().getData();
             if (data.startsWith("PRODUCT_")) {
                 sendMessage = productRequestInterceptor.interceptRequest(callbackQuery, data, chatState);
+            } else if (data.startsWith("CART_")) {
+                sendMessage = cartRequestInterceptor.interceptRequest(callbackQuery, data, chatState);
             } else if (data.startsWith("ADMIN_")) {
                 sendMessage = adminRequestInterceptor.interceptRequest(callbackQuery, data, chatState);
             } else if (data.equals("BACK_TO_MAIN_MENU")) {
@@ -110,6 +114,14 @@ public class TelegramBot extends TelegramLongPollingBot {
                 chatState.remove(username);
                 sendMessage = adminVendorRequestInterceptor.deleteVendor(message.getChatId().toString(), messageText);
             }
+
+            else if (userState == UserState.CART_WAITING_ADD_TO) {
+                chatState.remove(username);
+                sendMessage = cartRequestInterceptor.addProductToCart(message.getChatId().toString(), message.getFrom().getUserName(), messageText);
+            } else if (userState == UserState.CART_WAITING_REMOVE_FROM) {
+                chatState.remove(username);
+                sendMessage = cartRequestInterceptor.removeProductToCart(message.getChatId().toString(), message.getFrom().getUserName(), messageText);
+            }
         } else {
             sendMessage = SendMessage.builder().chatId(update.getMessage().getChatId().toString()).text("Unknown command").build();
         }
@@ -141,12 +153,17 @@ public class TelegramBot extends TelegramLongPollingBot {
                 .text("Open product menu")
                 .callbackData("PRODUCT_OPEN_MENU")
                 .build();
+        InlineKeyboardButton openCartMenu = InlineKeyboardButton.builder()
+                .text("Open cart menu")
+                .callbackData("CART_OPEN_MENU")
+                .build();
         InlineKeyboardButton openAdminMenu = InlineKeyboardButton.builder()
                 .text("Open admin menu")
                 .callbackData("ADMIN_OPEN_MENU")
                 .build();
         List<List<InlineKeyboardButton>> buttons = List.of(
                 List.of(openProductMenu),
+                List.of(openCartMenu),
                 List.of(openAdminMenu)
         );
         sendMessage.setReplyMarkup(new InlineKeyboardMarkup(buttons));

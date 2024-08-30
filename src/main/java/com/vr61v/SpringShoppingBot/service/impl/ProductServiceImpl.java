@@ -24,7 +24,6 @@ public class ProductServiceImpl implements ProductService {
                 .id(UUID.randomUUID())
                 .name(request.name())
                 .price(request.price())
-                .count(request.count())
                 .description(request.description())
                 .categoryId(request.categoryId())
                 .vendorId(request.vendorId())
@@ -35,6 +34,11 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product getProductById(UUID id) {
         return productRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public List<Product> getProducts(List<UUID> ids) {
+        return productRepository.findAllByIdIn(ids);
     }
 
     @Override
@@ -72,7 +76,6 @@ public class ProductServiceImpl implements ProductService {
 
         if (request.name() != null) product.setName(request.name());
         if (request.price() != null) product.setPrice(request.price());
-        if (request.count() != null) product.setCount(request.count());
         if (request.description() != null) product.setDescription(request.description());
         if (request.categoryId() != null) product.setCategoryId(request.categoryId());
         if (request.vendorId() != null) product.setVendorId(request.vendorId());

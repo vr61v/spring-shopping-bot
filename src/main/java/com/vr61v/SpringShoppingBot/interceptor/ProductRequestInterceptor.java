@@ -31,21 +31,21 @@ public class ProductRequestInterceptor {
 
     private final static int COUNT_OF_PRODUCT_ON_PAGE = 5;
 
-    private List<String> getCurrentPageInAlphabetOrder(Integer number, Integer size) {
+    private List<String> getCurrentPageInAlphabetOrder(Integer number) {
         ResponseEntity<List<Product>> productsResponse = productController.getAllProducts();
         if (productsResponse.getBody() == null) return List.of();
         List<Product> products = productsResponse.getBody();
         products.sort((p1, p2) -> p1.getName().compareToIgnoreCase(p2.getName()));
 
-        totalCountOfPages = (int) Math.ceil((double) products.size() / size);
-        int start = (number - 1) * size, end = start + size;
+        totalCountOfPages = (int) Math.ceil((double) products.size() / COUNT_OF_PRODUCT_ON_PAGE);
+        int start = (number - 1) * COUNT_OF_PRODUCT_ON_PAGE, end = start + COUNT_OF_PRODUCT_ON_PAGE;
         if (end > products.size()) end = products.size();
-        List<String> productNames = new ArrayList<>();
+        List<String> page = new ArrayList<>();
         for (Product product : products.subList(start, end)) {
-            productNames.add(product.getName());
+            page.add(String.format("%s %.2fр. \n{id:`%s`}", product.getName(), product.getPrice(), product.getId()));
         }
 
-        return productNames;
+        return page;
     }
 
     public SendMessage interceptRequest(CallbackQuery callbackQuery, String data, Map<String, UserState> chatState) {
@@ -60,15 +60,15 @@ public class ProductRequestInterceptor {
             return getNextPage(chatId, data);
         }
 
-        return SendMessage.builder().text("Invalid request").build();
+        return SendMessage.builder().chatId(chatId).text("Invalid request").build();
     }
 
     public SendMessage openProductMenu(String chatId) {
-        List<String> productNames = getCurrentPageInAlphabetOrder(START_CURRENT_PAGE, COUNT_OF_PRODUCT_ON_PAGE);
+        List<String> products = getCurrentPageInAlphabetOrder(START_CURRENT_PAGE);
 
         return ProductMenuUI.getProductUI(
                 chatId,
-                productNames,
+                products,
                 START_PREV_PAGE,
                 START_CURRENT_PAGE,
                 START_NEXT_PAGE,
@@ -80,7 +80,7 @@ public class ProductRequestInterceptor {
         int newCurrentPage = Integer.parseInt(data.split("GET_PREV_PAGE_")[1]);
         int newPrevPage = newCurrentPage - 1;
         int newNextPage = newCurrentPage + 1;
-        List<String> productNames = getCurrentPageInAlphabetOrder(newCurrentPage, COUNT_OF_PRODUCT_ON_PAGE);
+        List<String> productNames = getCurrentPageInAlphabetOrder(newCurrentPage);
 
         return ProductMenuUI.getProductUI(
                 chatId,
@@ -96,7 +96,7 @@ public class ProductRequestInterceptor {
         int newCurrentPage = Integer.parseInt(data.split("GET_NEXT_PAGE_")[1]);
         int newPrevPage = newCurrentPage - 1;
         int newNextPage = newCurrentPage + 1;
-        List<String> productNames = getCurrentPageInAlphabetOrder(newCurrentPage, COUNT_OF_PRODUCT_ON_PAGE);
+        List<String> productNames = getCurrentPageInAlphabetOrder(newCurrentPage);
 
         return ProductMenuUI.getProductUI(
                 chatId,
@@ -107,4 +107,5 @@ public class ProductRequestInterceptor {
                 totalCountOfPages
         );
     }
+
 }

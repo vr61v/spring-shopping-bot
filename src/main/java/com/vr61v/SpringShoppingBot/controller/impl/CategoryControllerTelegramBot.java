@@ -57,7 +57,7 @@ public class CategoryControllerTelegramBot implements CategoryController {
             log.info("Categories not found");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        log.info("Get all categories: {}", categories);
+        log.info("Get all categories");
         return ResponseEntity.status(HttpStatus.OK).body(categories);
     }
 

@@ -14,9 +14,6 @@ public record CreateProductRequest(
         @NotNull @Min(1)
         Float price,
 
-        @NotNull @Min(1)
-        Integer count,
-
         @NotNull @NotBlank
         String description,
 

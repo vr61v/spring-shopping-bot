@@ -13,6 +13,8 @@ public interface ProductService {
 
     Product getProductById(UUID id);
 
+    List<Product> getProducts(List<UUID> ids);
+
     List<Product> getProductsByName(String name);
 
     List<Product> getProductsByDescription(String description);

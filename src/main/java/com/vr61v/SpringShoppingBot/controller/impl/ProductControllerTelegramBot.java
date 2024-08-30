@@ -40,13 +40,24 @@ public class ProductControllerTelegramBot implements ProductController {
     }
 
     @Override
+    public ResponseEntity<List<Product>> getProducts(List<UUID> ids) {
+        List<Product> products = productService.getProducts(ids);
+        if (products.isEmpty()) {
+            log.info("Products with ids {} not found", ids);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        log.info("Get products by ids {}", ids);
+        return ResponseEntity.status(HttpStatus.OK).body(products);
+    }
+
+    @Override
     public ResponseEntity<List<Product>> getProductsByName(String name) {
         List<Product> product = productService.getProductsByName(name);
         if (product.isEmpty()) {
             log.info("Products with name {} not found", name);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        log.info("Get products by name {}: {}", name, product);
+        log.info("Get products by name {}", name);
         return ResponseEntity.status(HttpStatus.OK).body(product);
     }
 
@@ -57,7 +68,7 @@ public class ProductControllerTelegramBot implements ProductController {
             log.info("Products with description \"{}\" not found", description);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        log.info("Get products by description \"{}\": {}", description, products);
+        log.info("Get products by description \"{}\"", description);
         return ResponseEntity.status(HttpStatus.OK).body(products);
     }
 
@@ -68,7 +79,7 @@ public class ProductControllerTelegramBot implements ProductController {
             log.info("Products with category id {} not found", categoryId);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        log.info("Get products by category id {}: {}", categoryId, products);
+        log.info("Get products by category id {}", categoryId);
         return ResponseEntity.status(HttpStatus.OK).body(products);
     }
 
@@ -79,7 +90,7 @@ public class ProductControllerTelegramBot implements ProductController {
             log.info("Products with vendor id {} not found", vendorId);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        log.info("Get products by vendor id {}: {}", vendorId, products);
+        log.info("Get products by vendor id {}", vendorId);
         return ResponseEntity.status(HttpStatus.OK).body(products);
     }
 
@@ -90,7 +101,7 @@ public class ProductControllerTelegramBot implements ProductController {
             log.info("Products not found");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        log.info("Get all products: {}", products);
+        log.info("Get all products");
         return ResponseEntity.status(HttpStatus.OK).body(products);
     }
 

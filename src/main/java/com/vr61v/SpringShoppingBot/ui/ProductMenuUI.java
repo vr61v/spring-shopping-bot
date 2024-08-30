@@ -1,5 +1,6 @@
 package com.vr61v.SpringShoppingBot.ui;
 
+import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
@@ -15,6 +16,7 @@ public interface ProductMenuUI {
         SendMessage sendMessage = SendMessage.builder()
                 .chatId(chatId)
                 .text(parseProductNamesToMessageText(productNames))
+                .parseMode(ParseMode.MARKDOWN)
                 .build();
 
         InlineKeyboardButton prevButton = InlineKeyboardButton.builder()
@@ -29,9 +31,9 @@ public interface ProductMenuUI {
                 .text(">")
                 .callbackData("PRODUCT_GET_NEXT_PAGE_" + nextPage)
                 .build();
-        InlineKeyboardButton addProductToBucket = InlineKeyboardButton.builder()
-                .text("Add product to bucket")
-                .callbackData("PRODUCT_ADD_TO_BUCKET")
+        InlineKeyboardButton addProductToCart = InlineKeyboardButton.builder()
+                .text("Add product to cart")
+                .callbackData("CART_ADD_TO")
                 .build();
         InlineKeyboardButton addProductToFavorites = InlineKeyboardButton.builder()
                 .text("Add product to favorites")
@@ -50,7 +52,7 @@ public interface ProductMenuUI {
 
         List<List<InlineKeyboardButton>> buttons = List.of(
                 navigationRow,
-                List.of(addProductToBucket),
+                List.of(addProductToCart),
                 List.of(addProductToFavorites),
                 List.of(backButton)
         );

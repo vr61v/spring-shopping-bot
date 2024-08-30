@@ -27,9 +27,6 @@ public class Product {
     @Field(type = FieldType.Float, name = "price")
     private Float price;
 
-    @Field(type = FieldType.Integer, name = "count")
-    private Integer count;
-
     @Field(type = FieldType.Text, name = "description")
     private String description;
 

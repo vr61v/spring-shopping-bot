@@ -11,9 +11,6 @@ public record UpdateProductRequest(
         @Min(1)
         Float price,
 
-        @Min(1)
-        Integer count,
-
         String description,
 
         UUID categoryId,
