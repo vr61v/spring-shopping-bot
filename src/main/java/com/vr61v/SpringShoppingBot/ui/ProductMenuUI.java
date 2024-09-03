@@ -35,10 +35,6 @@ public interface ProductMenuUI {
                 .text("Add product to cart")
                 .callbackData("CART_ADD_TO")
                 .build();
-        InlineKeyboardButton addProductToFavorites = InlineKeyboardButton.builder()
-                .text("Add product to favorites")
-                .callbackData("PRODUCT_ADD_TO_FAVORITES")
-                .build();
         InlineKeyboardButton backButton = InlineKeyboardButton.builder()
                 .text("Back")
                 .callbackData("BACK_TO_MAIN_MENU")
@@ -53,7 +49,6 @@ public interface ProductMenuUI {
         List<List<InlineKeyboardButton>> buttons = List.of(
                 navigationRow,
                 List.of(addProductToCart),
-                List.of(addProductToFavorites),
                 List.of(backButton)
         );
 

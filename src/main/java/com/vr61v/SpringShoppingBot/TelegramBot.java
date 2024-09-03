@@ -14,6 +14,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     private final AdminVendorRequestInterceptor adminVendorRequestInterceptor;
 
     private final static HashMap<String, UserState> chatState = new HashMap<>();
+    private final BotConfig botConfig;
 
     private Map<String, String> parseMessageToField(String entity) {
         List<String> lines = List.of(entity.split("\n"));
@@ -62,7 +64,6 @@ public class TelegramBot extends TelegramLongPollingBot {
             } else if (data.startsWith("ADMIN_")) {
                 sendMessage = adminRequestInterceptor.interceptRequest(callbackQuery, data, chatState);
             } else if (data.equals("BACK_TO_MAIN_MENU")) {
-                update.setMessage(update.getCallbackQuery().getMessage());
                 startBotCommand(update);
                 return;
             }
@@ -144,9 +145,10 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
 
     public void startBotCommand(Update update) {
-        Message message = update.getMessage();
+        String chatId = (update.hasCallbackQuery() ? update.getCallbackQuery().getMessage() : update.getMessage())
+                .getChatId().toString();
         SendMessage sendMessage = SendMessage.builder()
-                .chatId(message.getChatId().toString())
+                .chatId(chatId)
                 .text("Main menu")
                 .build();
         InlineKeyboardButton openProductMenu = InlineKeyboardButton.builder()
@@ -161,11 +163,15 @@ public class TelegramBot extends TelegramLongPollingBot {
                 .text("Open admin menu")
                 .callbackData("ADMIN_OPEN_MENU")
                 .build();
-        List<List<InlineKeyboardButton>> buttons = List.of(
-                List.of(openProductMenu),
-                List.of(openCartMenu),
-                List.of(openAdminMenu)
-        );
+
+        List<List<InlineKeyboardButton>> buttons = new ArrayList<>();
+        buttons.add(List.of(openProductMenu));
+        buttons.add(List.of(openCartMenu));
+        if (update.hasCallbackQuery() && botConfig.getAdmins().contains(update.getCallbackQuery().getFrom().getUserName()) ||
+            botConfig.getAdmins().contains(update.getMessage().getFrom().getUserName())) {
+            buttons.add(List.of(openAdminMenu));
+        }
+
         sendMessage.setReplyMarkup(new InlineKeyboardMarkup(buttons));
 
         try {

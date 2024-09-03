@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
+import java.util.List;
+
 @Data
 @Configuration
 @PropertySource("application.properties")
@@ -15,5 +17,8 @@ public class BotConfig {
 
     @Value("${bot.token}")
     private String token;
+
+    @Value("vr61v")
+    private List<String> admins;
 
 }
