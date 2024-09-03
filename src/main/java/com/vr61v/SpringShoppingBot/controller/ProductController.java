@@ -24,7 +24,9 @@ public interface ProductController {
 
     ResponseEntity<List<Product>> getProductsByVendorId(UUID vendorId);
 
-    ResponseEntity<List<Product>> getAllProducts();
+    ResponseEntity<List<Product>> getProductPage(int from, int size);
+
+    ResponseEntity<Long> getProductsCount();
 
     ResponseEntity<Product> updateProduct(UUID id, UpdateProductRequest request);
 

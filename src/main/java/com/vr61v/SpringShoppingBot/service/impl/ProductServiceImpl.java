@@ -6,9 +6,10 @@ import com.vr61v.SpringShoppingBot.document.request.product.UpdateProductRequest
 import com.vr61v.SpringShoppingBot.repository.ProductRepository;
 import com.vr61v.SpringShoppingBot.service.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -62,11 +63,14 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Product> getAllProducts() {
-        Iterable<Product> products = productRepository.findAll();
-        List<Product> productList = new ArrayList<>();
-        for (Product product : products) productList.add(product);
-        return productList;
+    public List<Product> getProductPage(int from, int size) {
+        Page<Product> pageProducts = productRepository.findAll(PageRequest.of(from, size));
+        return pageProducts.getContent();
+    }
+
+    @Override
+    public long getProductsCount() {
+        return productRepository.count();
     }
 
     @Override

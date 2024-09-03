@@ -23,7 +23,9 @@ public interface ProductService {
 
     List<Product> getProductsByVendorId(UUID vendorId);
 
-    List<Product> getAllProducts();
+    List<Product> getProductPage(int from, int size);
+
+    long getProductsCount();
 
     Product updateProduct(UUID id, UpdateProductRequest request);
 

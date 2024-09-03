@@ -95,14 +95,21 @@ public class ProductControllerTelegramBot implements ProductController {
     }
 
     @Override
-    public ResponseEntity<List<Product>> getAllProducts() {
-        List<Product> products = productService.getAllProducts();
+    public ResponseEntity<List<Product>> getProductPage(int from, int size) {
+        List<Product> products = productService.getProductPage(from, size);
         if (products.isEmpty()) {
             log.info("Products not found");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         log.info("Get all products");
         return ResponseEntity.status(HttpStatus.OK).body(products);
+    }
+
+    @Override
+    public ResponseEntity<Long> getProductsCount() {
+        Long count = productService.getProductsCount();
+        log.info("Get product count {}", count);
+        return ResponseEntity.status(HttpStatus.OK).body(count);
     }
 
     @Override
