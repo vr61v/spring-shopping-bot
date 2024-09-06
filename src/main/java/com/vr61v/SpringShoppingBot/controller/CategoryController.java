@@ -1,25 +1,17 @@
 package com.vr61v.SpringShoppingBot.controller;
 
-import com.vr61v.SpringShoppingBot.document.Category;
-import com.vr61v.SpringShoppingBot.document.request.category.CreateCategoryRequest;
-import com.vr61v.SpringShoppingBot.document.request.category.UpdateCategoryRequest;
-import org.springframework.http.ResponseEntity;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.Map;
 
 public interface CategoryController {
 
-    ResponseEntity<Category> createCategory(CreateCategoryRequest request);
+    SendMessage createCategory(String chatId, Map<String, String> categoryFields);
 
-    ResponseEntity<Category> getCategoryById(UUID id);
+    SendMessage updateCategory(String chatId, Map<String, String> categoryFields);
 
-    ResponseEntity<Category> getCategoryByName(String name);
+    SendMessage searchCategory(String chatId, String name);
 
-    ResponseEntity<List<Category>> getAllCategories();
-
-    ResponseEntity<Category> updateCategory(UUID id, UpdateCategoryRequest request);
-
-    ResponseEntity<Category> deleteCategory(UUID id);
+    SendMessage deleteCategory(String chatId, String categoryId);
 
 }

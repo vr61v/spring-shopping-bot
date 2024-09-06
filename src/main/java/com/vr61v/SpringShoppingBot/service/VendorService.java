@@ -11,11 +11,7 @@ public interface VendorService {
 
     Vendor saveVendor(CreateVendorRequest request);
 
-    Vendor getVendorById(UUID id);
-
     Vendor getVendorByName(String name);
-
-    List<Vendor> getAllVendors();
 
     Vendor updateVendor(UUID id, UpdateVendorRequest request);
 

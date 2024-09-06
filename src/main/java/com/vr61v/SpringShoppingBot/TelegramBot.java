@@ -1,19 +1,36 @@
 package com.vr61v.SpringShoppingBot;
 
 import com.vr61v.SpringShoppingBot.config.BotConfig;
+import com.vr61v.SpringShoppingBot.controller.CartController;
+import com.vr61v.SpringShoppingBot.controller.CategoryController;
+import com.vr61v.SpringShoppingBot.controller.ProductController;
+import com.vr61v.SpringShoppingBot.controller.VendorController;
 import com.vr61v.SpringShoppingBot.entity.UserState;
-import com.vr61v.SpringShoppingBot.interceptor.*;
+import com.vr61v.SpringShoppingBot.interceptor.AdminRequestInterceptor;
+import com.vr61v.SpringShoppingBot.interceptor.CartRequestInterceptor;
+import com.vr61v.SpringShoppingBot.interceptor.ProductRequestInterceptor;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.ParseMode;
+import org.telegram.telegrambots.meta.api.methods.send.SendMediaGroup;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.media.InputMedia;
+import org.telegram.telegrambots.meta.api.objects.media.InputMediaPhoto;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,20 +42,21 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     private final BotConfig config;
 
+    private final AdminRequestInterceptor adminRequestInterceptor;
+
     private final ProductRequestInterceptor productRequestInterceptor;
 
     private final CartRequestInterceptor cartRequestInterceptor;
 
-    private final AdminRequestInterceptor adminRequestInterceptor;
+    private final ProductController productController;
 
-    private final AdminProductRequestInterceptor adminProductRequestInterceptor;
+    private final CategoryController categoryController;
 
-    private final AdminCategoryRequestInterceptor adminCategoryRequestInterceptor;
+    private final VendorController vendorController;
 
-    private final AdminVendorRequestInterceptor adminVendorRequestInterceptor;
+    private final CartController cartController;
 
     private final static HashMap<String, UserState> chatState = new HashMap<>();
-    private final BotConfig botConfig;
 
     private Map<String, String> parseMessageToField(String entity) {
         List<String> lines = List.of(entity.split("\n"));
@@ -53,17 +71,36 @@ public class TelegramBot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         SendMessage sendMessage = new SendMessage();
-
         if (update.hasCallbackQuery()) { // Check if the button is pressed
             CallbackQuery callbackQuery = update.getCallbackQuery();
             String data = update.getCallbackQuery().getData();
             if (data.startsWith("PRODUCT_")) {
-                sendMessage = productRequestInterceptor.interceptRequest(callbackQuery, data, chatState);
-            } else if (data.startsWith("CART_")) {
+                Pair<SendMediaGroup, SendMessage> response = productRequestInterceptor.interceptRequest(callbackQuery, data);
+                try {
+                    int size = response.getLeft().getMedias().size();
+                    if (2 <= size && size <= 10) execute(response.getLeft());
+                    else {
+                        SendMediaGroup group = response.getLeft();
+                        String chatId = group.getChatId();
+                        String caption = group.getMedias().get(0).getCaption();
+                        String url = group.getMedias().get(0).getMedia();
+                        InputStream stream = new URL(url).openStream();
+                        InputFile photo = new InputFile(stream, url);
+                        SendPhoto sendPhoto = SendPhoto.builder().chatId(chatId).photo(photo).caption(caption).parseMode(ParseMode.MARKDOWN).build();
+                        execute(sendPhoto);
+                    }
+                    execute(response.getRight());
+                } catch (TelegramApiException | IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            else if (data.startsWith("CART_")) {
                 sendMessage = cartRequestInterceptor.interceptRequest(callbackQuery, data, chatState);
-            } else if (data.startsWith("ADMIN_")) {
+            }
+            else if (data.startsWith("ADMIN_")) {
                 sendMessage = adminRequestInterceptor.interceptRequest(callbackQuery, data, chatState);
-            } else if (data.equals("BACK_TO_MAIN_MENU")) {
+            }
+            else if (data.equals("BACK_TO_MAIN_MENU")) {
                 startBotCommand(update);
                 return;
             }
@@ -72,56 +109,59 @@ public class TelegramBot extends TelegramLongPollingBot {
             String messageText = message.getText();
             String username = update.getMessage().getFrom().getUserName();
             UserState userState = chatState.get(username);
+
             if (messageText.equals("/start")) {
                 startBotCommand(update);
-            } else if (userState == UserState.PRODUCT_WAITING_CREATE_REQUEST) {
+            }
+
+            else if (userState == UserState.PRODUCT_WAITING_CREATE_REQUEST) {
                 chatState.remove(username);
-                sendMessage = adminProductRequestInterceptor.createProduct(message.getChatId().toString(), parseMessageToField(messageText));
+                sendMessage = productController.createProduct(message.getChatId().toString(), parseMessageToField(messageText));
             } else if (userState == UserState.PRODUCT_WAITING_UPDATE_REQUEST) {
                 chatState.put(username, userState);
-                sendMessage = adminProductRequestInterceptor.updateProduct(message.getChatId().toString(), parseMessageToField(messageText));
+                sendMessage = productController.updateProduct(message.getChatId().toString(), parseMessageToField(messageText));
             } else if (userState == UserState.PRODUCT_WAITING_SEARCH_REQUEST) {
                 chatState.remove(username);
-                sendMessage = adminProductRequestInterceptor.searchProducts(message.getChatId().toString(), messageText);
+                sendMessage = productController.searchProducts(message.getChatId().toString(), messageText);
             } else if (userState == UserState.PRODUCT_WAITING_DELETE_REQUEST) {
                 chatState.remove(username);
-                sendMessage = adminProductRequestInterceptor.deleteProduct(message.getChatId().toString(), messageText);
+                sendMessage = productController.deleteProduct(message.getChatId().toString(), messageText);
             }
 
             else if (userState == UserState.CATEGORY_WAITING_CREATE_REQUEST) {
                 chatState.remove(username);
-                sendMessage = adminCategoryRequestInterceptor.createCategory(message.getChatId().toString(), parseMessageToField(messageText));
+                sendMessage = categoryController.createCategory(message.getChatId().toString(), parseMessageToField(messageText));
             } else if (userState == UserState.CATEGORY_WAITING_UPDATE_REQUEST) {
                 chatState.put(username, userState);
-                sendMessage = adminCategoryRequestInterceptor.updateCategory(message.getChatId().toString(), parseMessageToField(messageText));
+                sendMessage = categoryController.updateCategory(message.getChatId().toString(), parseMessageToField(messageText));
             } else if (userState == UserState.CATEGORY_WAITING_SEARCH_REQUEST) {
                 chatState.remove(username);
-                sendMessage = adminCategoryRequestInterceptor.searchCategory(message.getChatId().toString(), messageText);
+                sendMessage = categoryController.searchCategory(message.getChatId().toString(), messageText);
             } else if (userState == UserState.CATEGORY_WAITING_DELETE_REQUEST) {
                 chatState.remove(username);
-                sendMessage = adminCategoryRequestInterceptor.deleteCategory(message.getChatId().toString(), messageText);
+                sendMessage = categoryController.deleteCategory(message.getChatId().toString(), messageText);
             }
 
             else if (userState == UserState.VENDOR_WAITING_CREATE_REQUEST) {
                 chatState.remove(username);
-                sendMessage = adminVendorRequestInterceptor.createVendor(message.getChatId().toString(), parseMessageToField(messageText));
+                sendMessage = vendorController.createVendor(message.getChatId().toString(), parseMessageToField(messageText));
             } else if (userState == UserState.VENDOR_WAITING_UPDATE_REQUEST) {
                 chatState.put(username, userState);
-                sendMessage = adminVendorRequestInterceptor.updateVendor(message.getChatId().toString(), parseMessageToField(messageText));
+                sendMessage = vendorController.updateVendor(message.getChatId().toString(), parseMessageToField(messageText));
             } else if (userState == UserState.VENDOR_WAITING_SEARCH_REQUEST) {
                 chatState.remove(username);
-                sendMessage = adminVendorRequestInterceptor.searchVendor(message.getChatId().toString(), messageText);
+                sendMessage = vendorController.searchVendor(message.getChatId().toString(), messageText);
             } else if (userState == UserState.VENDOR_WAITING_DELETE_REQUEST) {
                 chatState.remove(username);
-                sendMessage = adminVendorRequestInterceptor.deleteVendor(message.getChatId().toString(), messageText);
+                sendMessage = vendorController.deleteVendor(message.getChatId().toString(), messageText);
             }
 
-            else if (userState == UserState.CART_WAITING_ADD_TO) {
+            else if (userState == UserState.CART_WAITING_ADD_IN) {
                 chatState.remove(username);
-                sendMessage = cartRequestInterceptor.addProductToCart(message.getChatId().toString(), message.getFrom().getUserName(), messageText);
+                sendMessage = cartController.addProductInCart(message.getChatId().toString(), message.getFrom().getUserName(), messageText);
             } else if (userState == UserState.CART_WAITING_REMOVE_FROM) {
                 chatState.remove(username);
-                sendMessage = cartRequestInterceptor.removeProductToCart(message.getChatId().toString(), message.getFrom().getUserName(), messageText);
+                sendMessage = cartController.removeProductFromCart(message.getChatId().toString(), message.getFrom().getUserName(), messageText);
             }
         } else {
             sendMessage = SendMessage.builder().chatId(update.getMessage().getChatId().toString()).text("Unknown command").build();
@@ -167,8 +207,8 @@ public class TelegramBot extends TelegramLongPollingBot {
         List<List<InlineKeyboardButton>> buttons = new ArrayList<>();
         buttons.add(List.of(openProductMenu));
         buttons.add(List.of(openCartMenu));
-        if (update.hasCallbackQuery() && botConfig.getAdmins().contains(update.getCallbackQuery().getFrom().getUserName()) ||
-            botConfig.getAdmins().contains(update.getMessage().getFrom().getUserName())) {
+        if (update.hasCallbackQuery() && config.getAdmins().contains(update.getCallbackQuery().getFrom().getUserName()) ||
+            config.getAdmins().contains(update.getMessage().getFrom().getUserName())) {
             buttons.add(List.of(openAdminMenu));
         }
 

@@ -28,18 +28,8 @@ public class VendorServiceImpl implements VendorService {
     }
 
     @Override
-    public Vendor getVendorById(UUID id) {
-        return vendorRepository.findById(id).orElse(null);
-    }
-
-    @Override
     public Vendor getVendorByName(String name) {
         return vendorRepository.findByName(name).orElse(null);
-    }
-
-    @Override
-    public List<Vendor> getAllVendors() {
-        return (List<Vendor>) vendorRepository.findAll();
     }
 
     @Override

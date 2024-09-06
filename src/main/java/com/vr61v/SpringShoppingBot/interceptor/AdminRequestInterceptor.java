@@ -14,6 +14,10 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AdminRequestInterceptor {
 
+    private SendMessage openAdminMenu(String chatId) {
+        return AdminMenuUI.getAdminMenu(chatId);
+    }
+
     public SendMessage interceptRequest(CallbackQuery callbackQuery, String data, Map<String, UserState> chatState) {
         Message message = callbackQuery.getMessage();
         String chatId = message.getChatId().toString();
@@ -63,10 +67,6 @@ public class AdminRequestInterceptor {
         }
 
         return SendMessage.builder().chatId(chatId).text("Invalid request").build();
-    }
-
-    private SendMessage openAdminMenu(String chatId) {
-        return AdminMenuUI.getAdminUI(chatId);
     }
 
 }

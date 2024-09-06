@@ -16,7 +16,7 @@ public class CartServiceImpl implements CartService {
     private final CartRepository cartRepository;
 
     @Override
-    public Cart getCart(String username) {
+    public Cart getCartByUsername(String username) {
         Cart cart = cartRepository.findById(username).orElse(null);
         if (cart == null) {
             cart = Cart.builder().username(username).products(new HashMap<>()).build();
@@ -26,19 +26,19 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public Cart addProductToCart(String username, UUID product) {
-        Cart cart = getCart(username);
+    public void addProductInCart(String username, UUID product) {
+        Cart cart = getCartByUsername(username);
         cart.getProducts().put(product, cart.getProducts().getOrDefault(product, 0) + 1);
-        return cartRepository.save(cart);
+
+        cartRepository.save(cart);
     }
 
     @Override
-    public Cart removeProductFromCart(String username, UUID product) {
-        Cart cart = getCart(username);
+    public void removeProductFromCart(String username, UUID product) {
+        Cart cart = getCartByUsername(username);
         cart.getProducts().put(product, cart.getProducts().getOrDefault(product, 0) - 1);
-        if (cart.getProducts().get(product) <= 0) {
-            cart.getProducts().remove(product);
-        }
-        return cartRepository.save(cart);
+        if (cart.getProducts().get(product) <= 0) cart.getProducts().remove(product);
+
+        cartRepository.save(cart);
     }
 }

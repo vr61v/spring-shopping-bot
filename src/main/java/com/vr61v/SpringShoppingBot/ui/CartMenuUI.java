@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface CartMenuUI {
 
-    static SendMessage getCardUI(String chatId, String cartText) {
+    static SendMessage getCartMenu(String chatId, String cartText) {
         SendMessage sendMessage = SendMessage.builder()
                 .chatId(chatId)
                 .text(cartText)

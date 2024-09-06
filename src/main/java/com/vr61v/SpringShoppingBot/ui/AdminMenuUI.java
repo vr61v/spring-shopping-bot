@@ -8,12 +8,7 @@ import java.util.List;
 
 public interface AdminMenuUI {
 
-    static SendMessage getAdminUI(String chatId) {
-        SendMessage sendMessage = SendMessage.builder()
-                .chatId(chatId)
-                .text("Admin menu")
-                .build();
-
+    static SendMessage getAdminMenu(String chatId) {
         InlineKeyboardButton createProduct = InlineKeyboardButton.builder()
                 .text("Create product")
                 .callbackData("ADMIN_PRODUCT_CREATE")
@@ -80,8 +75,11 @@ public interface AdminMenuUI {
                 List.of(backButton)
         );
 
-        sendMessage.setReplyMarkup(new InlineKeyboardMarkup(buttons));
-        return sendMessage;
+        return SendMessage.builder()
+                .chatId(chatId)
+                .text("Admin menu")
+                .replyMarkup(new InlineKeyboardMarkup(buttons))
+                .build();
     }
 
 }

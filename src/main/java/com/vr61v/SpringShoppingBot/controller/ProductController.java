@@ -1,35 +1,17 @@
 package com.vr61v.SpringShoppingBot.controller;
 
-import com.vr61v.SpringShoppingBot.document.Product;
-import com.vr61v.SpringShoppingBot.document.request.product.CreateProductRequest;
-import com.vr61v.SpringShoppingBot.document.request.product.UpdateProductRequest;
-import org.springframework.http.ResponseEntity;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.Map;
 
 public interface ProductController {
 
-    ResponseEntity<Product> createProduct(CreateProductRequest request);
+    SendMessage createProduct(String chatId, Map<String, String> productFields);
 
-    ResponseEntity<Product> getProductById(UUID id);
+    SendMessage updateProduct(String chatId, Map<String, String> productFields);
 
-    ResponseEntity<List<Product>> getProducts(List<UUID> ids);
+    SendMessage searchProducts(String chatId, String name);
 
-    ResponseEntity<List<Product>> getProductsByName(String name);
-
-    ResponseEntity<List<Product>> getProductByDescription(String description);
-
-    ResponseEntity<List<Product>> getProductsByCategoryId(UUID categoryId);
-
-    ResponseEntity<List<Product>> getProductsByVendorId(UUID vendorId);
-
-    ResponseEntity<List<Product>> getProductPage(int from, int size);
-
-    ResponseEntity<Long> getProductsCount();
-
-    ResponseEntity<Product> updateProduct(UUID id, UpdateProductRequest request);
-
-    ResponseEntity<Product> deleteProduct(UUID id);
+    SendMessage deleteProduct(String chatId, String productId);
 
 }

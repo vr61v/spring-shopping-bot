@@ -1,16 +1,11 @@
 package com.vr61v.SpringShoppingBot.controller;
 
-import com.vr61v.SpringShoppingBot.document.Cart;
-import org.springframework.http.ResponseEntity;
-
-import java.util.UUID;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
 public interface CartController {
 
-    ResponseEntity<Cart> getCart(String username);
+    SendMessage addProductInCart(String chatId, String username, String productId);
 
-    ResponseEntity<Cart> addProductToCart(String username, UUID product);
-
-    ResponseEntity<Cart> removeProductFromCart(String username, UUID product);
+    SendMessage removeProductFromCart(String chatId, String username, String productId);
 
 }

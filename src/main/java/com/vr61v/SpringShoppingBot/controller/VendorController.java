@@ -1,25 +1,17 @@
 package com.vr61v.SpringShoppingBot.controller;
 
-import com.vr61v.SpringShoppingBot.document.Vendor;
-import com.vr61v.SpringShoppingBot.document.request.vendor.CreateVendorRequest;
-import com.vr61v.SpringShoppingBot.document.request.vendor.UpdateVendorRequest;
-import org.springframework.http.ResponseEntity;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.Map;
 
 public interface VendorController {
 
-    ResponseEntity<Vendor> createVendor(CreateVendorRequest request);
+    SendMessage createVendor(String chatId, Map<String, String> vendorFields);
 
-    ResponseEntity<Vendor> getVendorById(UUID id);
+    SendMessage updateVendor(String chatId, Map<String, String> vendorFields);
 
-    ResponseEntity<Vendor> getVendorByName(String name);
+    SendMessage searchVendor(String chatId, String name);
 
-    ResponseEntity<List<Vendor>> getAllVendors();
-
-    ResponseEntity<Vendor> updateVendor(UUID id, UpdateVendorRequest request);
-
-    ResponseEntity<Vendor> deleteVendor(UUID id);
+    SendMessage deleteVendor(String chatId, String vendorId);
     
 }
