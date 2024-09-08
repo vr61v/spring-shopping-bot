@@ -67,6 +67,7 @@ public class CategoryControllerImpl implements CategoryController {
                     .chatId(chatId).text("Category not found")
                     .build();
         }
+
         return SendMessage.builder()
                 .chatId(chatId).text("Category found: " + response)
                 .build();

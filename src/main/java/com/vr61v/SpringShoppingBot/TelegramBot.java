@@ -21,15 +21,12 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.media.InputMedia;
-import org.telegram.telegrambots.meta.api.objects.media.InputMediaPhoto;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -68,6 +65,27 @@ public class TelegramBot extends TelegramLongPollingBot {
         return map;
     }
 
+    private void sendResponseOnProductCallbackQuery(CallbackQuery callbackQuery, String data) {
+        Pair<SendMediaGroup, SendMessage> response = productRequestInterceptor.interceptRequest(callbackQuery, data, chatState);
+        try {
+            int size = response.getLeft().getMedias().size();
+            if (2 <= size && size <= 10) execute(response.getLeft());
+            else if (size == 1) {
+                SendMediaGroup group = response.getLeft();
+                String chatId = group.getChatId();
+                String caption = group.getMedias().get(0).getCaption();
+                String url = group.getMedias().get(0).getMedia();
+                InputStream stream = new URL(url).openStream();
+                InputFile photo = new InputFile(stream, url);
+                SendPhoto sendPhoto = SendPhoto.builder().chatId(chatId).photo(photo).caption(caption).parseMode(ParseMode.MARKDOWN).build();
+                execute(sendPhoto);
+            }
+            execute(response.getRight());
+        } catch (TelegramApiException | IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public void onUpdateReceived(Update update) {
         SendMessage sendMessage = new SendMessage();
@@ -75,24 +93,8 @@ public class TelegramBot extends TelegramLongPollingBot {
             CallbackQuery callbackQuery = update.getCallbackQuery();
             String data = update.getCallbackQuery().getData();
             if (data.startsWith("PRODUCT_")) {
-                Pair<SendMediaGroup, SendMessage> response = productRequestInterceptor.interceptRequest(callbackQuery, data);
-                try {
-                    int size = response.getLeft().getMedias().size();
-                    if (2 <= size && size <= 10) execute(response.getLeft());
-                    else {
-                        SendMediaGroup group = response.getLeft();
-                        String chatId = group.getChatId();
-                        String caption = group.getMedias().get(0).getCaption();
-                        String url = group.getMedias().get(0).getMedia();
-                        InputStream stream = new URL(url).openStream();
-                        InputFile photo = new InputFile(stream, url);
-                        SendPhoto sendPhoto = SendPhoto.builder().chatId(chatId).photo(photo).caption(caption).parseMode(ParseMode.MARKDOWN).build();
-                        execute(sendPhoto);
-                    }
-                    execute(response.getRight());
-                } catch (TelegramApiException | IOException e) {
-                    throw new RuntimeException(e);
-                }
+                sendResponseOnProductCallbackQuery(callbackQuery, data);
+                return;
             }
             else if (data.startsWith("CART_")) {
                 sendMessage = cartRequestInterceptor.interceptRequest(callbackQuery, data, chatState);
@@ -126,6 +128,19 @@ public class TelegramBot extends TelegramLongPollingBot {
             } else if (userState == UserState.PRODUCT_WAITING_DELETE_REQUEST) {
                 chatState.remove(username);
                 sendMessage = productController.deleteProduct(message.getChatId().toString(), messageText);
+            } else if (userState == UserState.PRODUCT_WAITING_QUERY) {
+                chatState.remove(username);
+                CallbackQuery callbackQuery = new CallbackQuery(
+                        null,
+                        null,
+                        message,
+                        null,
+                        String.format("OPEN_MENU_%s", messageText),
+                        null,
+                        null);
+                String data = callbackQuery.getData();
+                sendResponseOnProductCallbackQuery(callbackQuery, data);
+                return;
             }
 
             else if (userState == UserState.CATEGORY_WAITING_CREATE_REQUEST) {

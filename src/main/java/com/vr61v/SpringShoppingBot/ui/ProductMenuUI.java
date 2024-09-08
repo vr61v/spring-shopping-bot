@@ -13,7 +13,7 @@ import java.util.List;
 
 public interface ProductMenuUI {
 
-    static SendMediaGroup getProductMenu(String chatId, List<String> descriptions, List<String> photos) {
+    static SendMediaGroup getProductMenu(String chatId, String query, List<String> descriptions, List<String> photos) {
         List<InputMedia> medias = new ArrayList<>();
         for (String url : photos) {
             medias.add(InputMediaPhoto.builder()
@@ -24,13 +24,19 @@ public interface ProductMenuUI {
         }
 
         StringBuilder messageText = new StringBuilder();
+        if (query.isEmpty()) {
+            messageText.append("Products found: \n");
+        } else {
+            String[] split = query.split(":");
+            messageText.append(String.format("Products by field %s with value %s found: \n", split[0], split[1]));
+        }
         for (int i = 0; i < descriptions.size(); ++i) {
             messageText.append(i + 1)
                     .append(". ")
                     .append(descriptions.get(i))
                     .append("\n");
         }
-        medias.get(0).setCaption(messageText.toString());
+        if (!medias.isEmpty()) medias.get(0).setCaption(messageText.toString());
 
         return SendMediaGroup.builder()
                 .chatId(chatId)
@@ -38,18 +44,22 @@ public interface ProductMenuUI {
                 .build();
     }
 
-    static SendMessage getProductMenuButtons(String chatId, int prevPage, int currentPage, int nextPage, int totalPage) {
+    static SendMessage getProductMenuButtons(String chatId, String query, int prevPage, int currentPage, int nextPage, int totalPage) {
         InlineKeyboardButton prevButton = InlineKeyboardButton.builder()
                 .text("<")
-                .callbackData("PRODUCT_GET_PREV_PAGE_" + prevPage)
+                .callbackData(String.format("PRODUCT_GET_PREV_PAGE_%s_%s", prevPage, query))
                 .build();
         InlineKeyboardButton currentButton = InlineKeyboardButton.builder()
                 .text(currentPage + "/" + totalPage)
-                .callbackData("PRODUCT_GET_CURRENT_PAGE_" + currentPage)
+                .callbackData(String.format("PRODUCT_GET_CURRENT_PAGE_%s_%s", currentPage, query))
                 .build();
         InlineKeyboardButton nextButton = InlineKeyboardButton.builder()
                 .text(">")
-                .callbackData("PRODUCT_GET_NEXT_PAGE_" + nextPage)
+                .callbackData(String.format("PRODUCT_GET_NEXT_PAGE_%s_%s", nextPage, query))
+                .build();
+        InlineKeyboardButton searchButton = InlineKeyboardButton.builder()
+                .text("Search product by field and value")
+                .callbackData("PRODUCT_SEARCH_BY_FIELD")
                 .build();
         InlineKeyboardButton addProductToCart = InlineKeyboardButton.builder()
                 .text("Add product to cart")
@@ -67,6 +77,7 @@ public interface ProductMenuUI {
 
         List<List<InlineKeyboardButton>> buttons = List.of(
                 navigationRow,
+                List.of(searchButton),
                 List.of(addProductToCart),
                 List.of(backButton)
         );

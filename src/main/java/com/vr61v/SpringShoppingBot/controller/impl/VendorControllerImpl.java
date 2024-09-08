@@ -34,6 +34,7 @@ public class VendorControllerImpl implements VendorController {
                     .chatId(chatId).text(String.format("Vendor creation failed: %s", e.getMessage()))
                     .build();
         }
+
         return SendMessage.builder()
                 .chatId(chatId).text(String.format("Vendor created: %s", response))
                 .build();
@@ -53,6 +54,7 @@ public class VendorControllerImpl implements VendorController {
                     .chatId(chatId).text(String.format("Vendor update failed: %s", e.getMessage()))
                     .build();
         }
+
         return SendMessage.builder()
                 .chatId(chatId).text(String.format("Vendor updated: %s", response))
                 .build();
@@ -64,6 +66,7 @@ public class VendorControllerImpl implements VendorController {
             return SendMessage.builder()
                     .chatId(chatId).text("Vendor not found").build();
         }
+
         return SendMessage.builder()
                 .chatId(chatId).text("Vendor found: " + response).build();
     }

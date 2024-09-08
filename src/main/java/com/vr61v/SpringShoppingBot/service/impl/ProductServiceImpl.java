@@ -8,6 +8,7 @@ import com.vr61v.SpringShoppingBot.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -44,12 +45,12 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<Product> getProductsByName(String name) {
-        return productRepository.findByName(name);
+        return productRepository.findAllByName(name);
     }
 
     @Override
-    public List<Product> getProductsByDescription(String description) {
-        return productRepository.findByDescriptionContainingIgnoreCase(description);
+    public List<Product> searchProductsByField(String field, String value, int from, int size) {
+        return productRepository.findProductsByField(field, value, PageRequest.of(from, size));
     }
 
     @Override
