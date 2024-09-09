@@ -1,14 +1,13 @@
 package com.vr61v.SpringShoppingBot.service.impl;
 
-import com.vr61v.SpringShoppingBot.document.Vendor;
-import com.vr61v.SpringShoppingBot.document.request.vendor.CreateVendorRequest;
-import com.vr61v.SpringShoppingBot.document.request.vendor.UpdateVendorRequest;
+import com.vr61v.SpringShoppingBot.entity.Vendor;
+import com.vr61v.SpringShoppingBot.entity.request.vendor.CreateVendorRequest;
+import com.vr61v.SpringShoppingBot.entity.request.vendor.UpdateVendorRequest;
 import com.vr61v.SpringShoppingBot.repository.VendorRepository;
 import com.vr61v.SpringShoppingBot.service.VendorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.UUID;
 
 @Component

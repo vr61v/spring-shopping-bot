@@ -1,9 +1,9 @@
 package com.vr61v.SpringShoppingBot.controller.impl;
 
 import com.vr61v.SpringShoppingBot.controller.VendorController;
-import com.vr61v.SpringShoppingBot.document.Vendor;
-import com.vr61v.SpringShoppingBot.document.request.vendor.CreateVendorRequest;
-import com.vr61v.SpringShoppingBot.document.request.vendor.UpdateVendorRequest;
+import com.vr61v.SpringShoppingBot.entity.Vendor;
+import com.vr61v.SpringShoppingBot.entity.request.vendor.CreateVendorRequest;
+import com.vr61v.SpringShoppingBot.entity.request.vendor.UpdateVendorRequest;
 import com.vr61v.SpringShoppingBot.service.ProductService;
 import com.vr61v.SpringShoppingBot.service.VendorService;
 import lombok.RequiredArgsConstructor;
@@ -62,6 +62,7 @@ public class VendorControllerImpl implements VendorController {
 
     public SendMessage searchVendor(String chatId, String name) {
         Vendor response = vendorService.getVendorByName(name);
+
         if (response == null) {
             return SendMessage.builder()
                     .chatId(chatId).text("Vendor not found").build();

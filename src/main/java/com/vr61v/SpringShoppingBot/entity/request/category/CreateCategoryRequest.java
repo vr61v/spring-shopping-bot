@@ -1,15 +1,15 @@
-package com.vr61v.SpringShoppingBot.document.request.vendor;
+package com.vr61v.SpringShoppingBot.entity.request.category;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public record CreateVendorRequest(
+public record CreateCategoryRequest(
 
         @NotBlank @NotNull
         String name,
 
         @NotBlank @NotNull
-        String description
+        Boolean isForOverEighteen
 
 ) {
 }

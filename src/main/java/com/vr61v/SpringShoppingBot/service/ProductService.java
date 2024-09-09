@@ -1,8 +1,8 @@
 package com.vr61v.SpringShoppingBot.service;
 
-import com.vr61v.SpringShoppingBot.document.Product;
-import com.vr61v.SpringShoppingBot.document.request.product.CreateProductRequest;
-import com.vr61v.SpringShoppingBot.document.request.product.UpdateProductRequest;
+import com.vr61v.SpringShoppingBot.entity.Product;
+import com.vr61v.SpringShoppingBot.entity.request.product.CreateProductRequest;
+import com.vr61v.SpringShoppingBot.entity.request.product.UpdateProductRequest;
 
 import java.util.List;
 import java.util.UUID;

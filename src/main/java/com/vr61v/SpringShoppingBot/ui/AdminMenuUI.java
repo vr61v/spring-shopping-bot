@@ -77,7 +77,7 @@ public interface AdminMenuUI {
 
         return SendMessage.builder()
                 .chatId(chatId)
-                .text("Admin menu")
+                .text("Welcome to admin menu!")
                 .replyMarkup(new InlineKeyboardMarkup(buttons))
                 .build();
     }

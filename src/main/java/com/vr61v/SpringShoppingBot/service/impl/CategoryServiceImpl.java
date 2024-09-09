@@ -1,8 +1,8 @@
 package com.vr61v.SpringShoppingBot.service.impl;
 
-import com.vr61v.SpringShoppingBot.document.Category;
-import com.vr61v.SpringShoppingBot.document.request.category.CreateCategoryRequest;
-import com.vr61v.SpringShoppingBot.document.request.category.UpdateCategoryRequest;
+import com.vr61v.SpringShoppingBot.entity.Category;
+import com.vr61v.SpringShoppingBot.entity.request.category.CreateCategoryRequest;
+import com.vr61v.SpringShoppingBot.entity.request.category.UpdateCategoryRequest;
 import com.vr61v.SpringShoppingBot.repository.CategoryRepository;
 import com.vr61v.SpringShoppingBot.service.CategoryService;
 import lombok.RequiredArgsConstructor;

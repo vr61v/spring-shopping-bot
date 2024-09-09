@@ -1,14 +1,13 @@
 package com.vr61v.SpringShoppingBot.service.impl;
 
-import com.vr61v.SpringShoppingBot.document.Product;
-import com.vr61v.SpringShoppingBot.document.request.product.CreateProductRequest;
-import com.vr61v.SpringShoppingBot.document.request.product.UpdateProductRequest;
+import com.vr61v.SpringShoppingBot.entity.Product;
+import com.vr61v.SpringShoppingBot.entity.request.product.CreateProductRequest;
+import com.vr61v.SpringShoppingBot.entity.request.product.UpdateProductRequest;
 import com.vr61v.SpringShoppingBot.repository.ProductRepository;
 import com.vr61v.SpringShoppingBot.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

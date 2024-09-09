@@ -1,11 +1,11 @@
 package com.vr61v.SpringShoppingBot.controller.impl;
 
 import com.vr61v.SpringShoppingBot.controller.ProductController;
-import com.vr61v.SpringShoppingBot.document.Category;
-import com.vr61v.SpringShoppingBot.document.Product;
-import com.vr61v.SpringShoppingBot.document.Vendor;
-import com.vr61v.SpringShoppingBot.document.request.product.CreateProductRequest;
-import com.vr61v.SpringShoppingBot.document.request.product.UpdateProductRequest;
+import com.vr61v.SpringShoppingBot.entity.Category;
+import com.vr61v.SpringShoppingBot.entity.Product;
+import com.vr61v.SpringShoppingBot.entity.Vendor;
+import com.vr61v.SpringShoppingBot.entity.request.product.CreateProductRequest;
+import com.vr61v.SpringShoppingBot.entity.request.product.UpdateProductRequest;
 import com.vr61v.SpringShoppingBot.service.CategoryService;
 import com.vr61v.SpringShoppingBot.service.ProductService;
 import com.vr61v.SpringShoppingBot.service.VendorService;
@@ -29,25 +29,33 @@ public class ProductControllerImpl implements ProductController {
 
     private final VendorService vendorService;
 
-    public SendMessage createProduct(String chatId, Map<String, String> productFields) {
+    private Product createProductByFields(Map<String, String> productFields) {
         String name = productFields.get("name");
         float price = Float.parseFloat(productFields.getOrDefault("price", "0"));
         String description = productFields.get("description");
-
         Category category = categoryService.getCategoryByName(productFields.get("category"));
-        if (category == null) return SendMessage.builder().chatId(chatId).text("Category not found").build();
-        UUID categoryId = category.getId();
-
         Vendor vendor = vendorService.getVendorByName(productFields.get("vendor"));
-        if (vendor == null) return SendMessage.builder().chatId(chatId).text("Vendor not found").build();
-        UUID vendorId = vendor.getId();
+
+        return Product.builder()
+                .name(name)
+                .price(price)
+                .description(description)
+                .categoryId(category.getId())
+                .vendorId(vendor.getId())
+                .build();
+    }
+
+    public SendMessage createProduct(String chatId, Map<String, String> productFields) {
+        Product product = createProductByFields(productFields);
+        if (product.getCategoryId() == null) return SendMessage.builder().chatId(chatId).text("Category not found").build();
+        if (product.getVendorId() == null) return SendMessage.builder().chatId(chatId).text("Vendor not found").build();
 
         CreateProductRequest request = new CreateProductRequest(
-                name,
-                price,
-                description,
-                categoryId,
-                vendorId
+                product.getName(),
+                product.getPrice(),
+                product.getDescription(),
+                product.getCategoryId(),
+                product.getVendorId()
         );
 
         Product response;
@@ -66,24 +74,16 @@ public class ProductControllerImpl implements ProductController {
 
     public SendMessage updateProduct(String chatId, Map<String, String> productFields) {
         UUID id = UUID.fromString(productFields.get("id"));
-        String name = productFields.get("name");
-        float price = Float.parseFloat(productFields.getOrDefault("price", "0"));
-        String description = productFields.get("description");
-
-        Category category = categoryService.getCategoryByName(productFields.get("category"));
-        if (category == null) return SendMessage.builder().chatId(chatId).text("Category not found").build();
-        UUID categoryId = category.getId();
-
-        Vendor vendor = vendorService.getVendorByName(productFields.get("vendor"));
-        if (vendor == null) return SendMessage.builder().chatId(chatId).text("Vendor not found").build();
-        UUID vendorId = vendor.getId();
+        Product product = createProductByFields(productFields);
+        if (product.getCategoryId() == null) return SendMessage.builder().chatId(chatId).text("Category not found").build();
+        if (product.getVendorId() == null) return SendMessage.builder().chatId(chatId).text("Vendor not found").build();
 
         UpdateProductRequest request = new UpdateProductRequest(
-                name,
-                price,
-                description,
-                categoryId,
-                vendorId
+                product.getName(),
+                product.getPrice(),
+                product.getDescription(),
+                product.getCategoryId(),
+                product.getVendorId()
         );
 
         Product response;

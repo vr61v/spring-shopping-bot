@@ -1,6 +1,6 @@
 package com.vr61v.SpringShoppingBot.repository;
 
-import com.vr61v.SpringShoppingBot.document.Product;
+import com.vr61v.SpringShoppingBot.entity.Product;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.annotations.Query;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
@@ -22,6 +22,5 @@ public interface ProductRepository extends ElasticsearchRepository<Product, UUID
 
     @Query("{\"match\":{\"?0\":{\"query\":\"?1\"}}}")
     List<Product> findProductsByField(String field, String value, Pageable pageable);
-
 
 }

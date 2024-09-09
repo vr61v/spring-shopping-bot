@@ -1,5 +1,7 @@
 package com.vr61v.SpringShoppingBot.ui;
 
+import com.vr61v.SpringShoppingBot.ui.buttons.CartButtons;
+import com.vr61v.SpringShoppingBot.ui.buttons.MainMenuButtons;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -10,33 +12,18 @@ import java.util.List;
 public interface CartMenuUI {
 
     static SendMessage getCartMenu(String chatId, String cartText) {
-        SendMessage sendMessage = SendMessage.builder()
+        List<List<InlineKeyboardButton>> buttons = List.of(
+                List.of(CartButtons.ADD_PRODUCT_TO_CART),
+                List.of(CartButtons.REMOVE_PRODUCT_FROM_CART),
+                List.of(MainMenuButtons.BACK_BUTTON)
+        );
+
+        return SendMessage.builder()
                 .chatId(chatId)
                 .text(cartText)
                 .parseMode(ParseMode.MARKDOWN)
+                .replyMarkup(new InlineKeyboardMarkup(buttons))
                 .build();
-
-        InlineKeyboardButton addProductToCart = InlineKeyboardButton.builder()
-                .text("Add product to cart")
-                .callbackData("CART_ADD_TO")
-                .build();
-        InlineKeyboardButton removeProductFromCart = InlineKeyboardButton.builder()
-                .text("Remove product from cart")
-                .callbackData("CART_REMOVE_FROM")
-                .build();
-        InlineKeyboardButton backButton = InlineKeyboardButton.builder()
-                .text("Back")
-                .callbackData("BACK_TO_MAIN_MENU")
-                .build();
-
-        List<List<InlineKeyboardButton>> buttons = List.of(
-                List.of(addProductToCart),
-                List.of(removeProductFromCart),
-                List.of(backButton)
-        );
-
-        sendMessage.setReplyMarkup(new InlineKeyboardMarkup(buttons));
-        return sendMessage;
     }
 
 

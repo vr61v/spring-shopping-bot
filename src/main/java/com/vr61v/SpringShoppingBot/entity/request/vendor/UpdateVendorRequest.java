@@ -1,4 +1,4 @@
-package com.vr61v.SpringShoppingBot.document.request.vendor;
+package com.vr61v.SpringShoppingBot.entity.request.vendor;
 
 public record UpdateVendorRequest(
 

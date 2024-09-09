@@ -1,4 +1,4 @@
-package com.vr61v.SpringShoppingBot.document;
+package com.vr61v.SpringShoppingBot.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

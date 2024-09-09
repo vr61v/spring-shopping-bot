@@ -1,6 +1,6 @@
 package com.vr61v.SpringShoppingBot.repository;
 
-import com.vr61v.SpringShoppingBot.document.Cart;
+import com.vr61v.SpringShoppingBot.entity.Cart;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 

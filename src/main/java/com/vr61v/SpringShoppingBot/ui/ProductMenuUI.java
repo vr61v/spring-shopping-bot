@@ -1,5 +1,9 @@
 package com.vr61v.SpringShoppingBot.ui;
 
+import com.vr61v.SpringShoppingBot.entity.Emojis;
+import com.vr61v.SpringShoppingBot.ui.buttons.CartButtons;
+import com.vr61v.SpringShoppingBot.ui.buttons.MainMenuButtons;
+import com.vr61v.SpringShoppingBot.ui.buttons.ProductButtons;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMediaGroup;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -46,7 +50,7 @@ public interface ProductMenuUI {
 
     static SendMessage getProductMenuButtons(String chatId, String query, int prevPage, int currentPage, int nextPage, int totalPage) {
         InlineKeyboardButton prevButton = InlineKeyboardButton.builder()
-                .text("<")
+                .text(Emojis.ARROW_LEFT)
                 .callbackData(String.format("PRODUCT_GET_PREV_PAGE_%s_%s", prevPage, query))
                 .build();
         InlineKeyboardButton currentButton = InlineKeyboardButton.builder()
@@ -54,20 +58,8 @@ public interface ProductMenuUI {
                 .callbackData(String.format("PRODUCT_GET_CURRENT_PAGE_%s_%s", currentPage, query))
                 .build();
         InlineKeyboardButton nextButton = InlineKeyboardButton.builder()
-                .text(">")
+                .text(Emojis.ARROW_RIGHT)
                 .callbackData(String.format("PRODUCT_GET_NEXT_PAGE_%s_%s", nextPage, query))
-                .build();
-        InlineKeyboardButton searchButton = InlineKeyboardButton.builder()
-                .text("Search product by field and value")
-                .callbackData("PRODUCT_SEARCH_BY_FIELD")
-                .build();
-        InlineKeyboardButton addProductToCart = InlineKeyboardButton.builder()
-                .text("Add product to cart")
-                .callbackData("CART_ADD_TO")
-                .build();
-        InlineKeyboardButton backButton = InlineKeyboardButton.builder()
-                .text("Back")
-                .callbackData("BACK_TO_MAIN_MENU")
                 .build();
 
         List<InlineKeyboardButton> navigationRow = new ArrayList<>();
@@ -77,9 +69,9 @@ public interface ProductMenuUI {
 
         List<List<InlineKeyboardButton>> buttons = List.of(
                 navigationRow,
-                List.of(searchButton),
-                List.of(addProductToCart),
-                List.of(backButton)
+                List.of(ProductButtons.SEARCH_PRODUCT_BY_FIELD),
+                List.of(CartButtons.ADD_PRODUCT_TO_CART),
+                List.of(MainMenuButtons.BACK_BUTTON)
         );
 
         return SendMessage.builder()

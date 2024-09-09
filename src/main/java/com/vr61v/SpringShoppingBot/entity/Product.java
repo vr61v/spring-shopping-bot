@@ -1,4 +1,4 @@
-package com.vr61v.SpringShoppingBot.document;
+package com.vr61v.SpringShoppingBot.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,8 +15,8 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(indexName = "vendors")
-public class Vendor {
+@Document(indexName = "products")
+public class Product {
 
     @Id
     private UUID id;
@@ -24,7 +24,16 @@ public class Vendor {
     @Field(type = FieldType.Text, name = "name")
     private String name;
 
+    @Field(type = FieldType.Float, name = "price")
+    private Float price;
+
     @Field(type = FieldType.Text, name = "description")
     private String description;
+
+    @Field(type = FieldType.Text, name = "category_id")
+    private UUID categoryId;
+
+    @Field(type = FieldType.Text, name = "vendor_id")
+    private UUID vendorId;
 
 }

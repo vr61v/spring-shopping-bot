@@ -1,4 +1,4 @@
-package com.vr61v.SpringShoppingBot.document;
+package com.vr61v.SpringShoppingBot.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,8 +15,8 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(indexName = "categories")
-public class Category {
+@Document(indexName = "vendors")
+public class Vendor {
 
     @Id
     private UUID id;
@@ -24,7 +24,7 @@ public class Category {
     @Field(type = FieldType.Text, name = "name")
     private String name;
 
-    @Field(type = FieldType.Boolean, name = "is_for_over_eighteen")
-    private Boolean isForOverEighteen;
+    @Field(type = FieldType.Text, name = "description")
+    private String description;
 
 }

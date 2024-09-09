@@ -14,17 +14,23 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AdminRequestInterceptor {
 
-    private SendMessage openAdminMenu(String chatId) {
-        return AdminMenuUI.getAdminMenu(chatId);
-    }
-
+    /***
+     *
+     * @param callbackQuery the request received from the pressed button.
+     * @param data string with text from button query.
+     * @param chatState used to save the chat state with the admin.
+     * @return SendMessage with a request to enter the data required to perform the selected
+     * CRUD operation, or the admin menu.
+     */
     public SendMessage interceptRequest(CallbackQuery callbackQuery, String data, Map<String, UserState> chatState) {
         Message message = callbackQuery.getMessage();
         String chatId = message.getChatId().toString();
 
         if (data.contains("ADMIN_OPEN_MENU")){
-            return openAdminMenu(chatId);
-        } else if (data.contains("PRODUCT_CREATE")) {
+            return AdminMenuUI.getAdminMenu(chatId);
+        }
+
+        else if (data.contains("PRODUCT_CREATE")) {
             chatState.put(callbackQuery.getFrom().getUserName(), UserState.PRODUCT_WAITING_CREATE_REQUEST);
             return SendMessage.builder().chatId(chatId).text("Enter new product fields").build();
         } else if (data.contains("PRODUCT_UPDATE")) {

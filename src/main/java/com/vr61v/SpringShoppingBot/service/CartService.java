@@ -1,6 +1,6 @@
 package com.vr61v.SpringShoppingBot.service;
 
-import com.vr61v.SpringShoppingBot.document.Cart;
+import com.vr61v.SpringShoppingBot.entity.Cart;
 
 import java.util.UUID;
 

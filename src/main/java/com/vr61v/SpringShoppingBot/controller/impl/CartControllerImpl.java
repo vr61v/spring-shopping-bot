@@ -1,7 +1,7 @@
 package com.vr61v.SpringShoppingBot.controller.impl;
 
 import com.vr61v.SpringShoppingBot.controller.CartController;
-import com.vr61v.SpringShoppingBot.document.Product;
+import com.vr61v.SpringShoppingBot.entity.Product;
 import com.vr61v.SpringShoppingBot.service.CartService;
 import com.vr61v.SpringShoppingBot.service.ProductService;
 import lombok.RequiredArgsConstructor;

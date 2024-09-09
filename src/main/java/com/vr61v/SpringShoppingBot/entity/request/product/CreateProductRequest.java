@@ -1,4 +1,4 @@
-package com.vr61v.SpringShoppingBot.document.request.product;
+package com.vr61v.SpringShoppingBot.entity.request.product;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
