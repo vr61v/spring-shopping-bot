@@ -18,7 +18,7 @@ public class BotConfig {
     @Value("${bot.token}")
     private String token;
 
-    @Value("vr61v")
+    @Value("LIST_OF_BOT_ADMINS")
     private List<String> admins;
 
 }
